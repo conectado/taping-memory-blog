@@ -1,0 +1,20 @@
+[package]
+name = "WebBlog"
+version = "0.1.0"
+authors = ["conectado <conectado2@protonmail.com>"]
+edition = "2018"
+[[bin]]
+name = "web_blog"
+path = "src/main.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+stdweb = "0.4"
+
+[dependencies.yew]
+version = "0.9"
+
+[lib]
+name = "web_blog_lib"
+path = "src/lib.rs"
