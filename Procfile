@@ -1,1 +1,1 @@
-web: npm start
+web: cargo install miniserve && miniserve ./static --index index.html

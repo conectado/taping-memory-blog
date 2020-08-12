@@ -14,6 +14,7 @@ serde = "1.0"
 serde_derive = "1.0"
 js-sys = "0.3"
 wasm-bindgen-futures = "0.4.17"
+miniserve = "0.7"
 
 [dependencies.wasm-bindgen]
 version = "0.2"
