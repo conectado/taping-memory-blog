@@ -8,10 +8,18 @@
     <meta name="description" content="Web dev blog">
     <meta name="author" content="conectado">
     <title>Web dev blog</title>
-    <link rel="stylesheet" type="text/css" href="css/blog_style.css">
-    <script src="web_blog.js"></script>
+    <link rel="stylesheet" type="text/css" href="build/blog_style.css">
+    <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/default.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+    <script charset="UTF-8"
+ src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/languages/rust.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script type="module">
+      import init from "./build/wasm.js";
+      init();
+    </script>
   </head>
 
   <body>
