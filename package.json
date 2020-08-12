@@ -18,18 +18,12 @@
     "rollup-plugin-postcss": "^3.1.2",
     "rollup-plugin-uglify": "^6.0.4",
     "rollup-plugin-wasm": "^3.0.0",
-    "serve": "^11.3.2"
+    "serve": "^11.3.2",
+    "wasm-pack": "^0.9.1"
   },
   "scripts": {
-    "build:js": "rollup -c",
-    "build:rs": "wasm-pack build --target web",
-    "build:copy": "mkdir -p release/css/ && cp target/deploy/blog_style.css release/css/ && cp target/deploy/web_blog.wasm release/ && cp target/deploy/index.html release/",
-    "build": "wasm-pack build --target web --out-name wasm --out-dir ./static/build",
-    "clean:deploy": "rm -rf /release",
-    "prod": "run-s build serve",
+    "build": "ls node_modules/wasm-pack/ && wasm-pack build",
     "serve": "miniserve ./static --index index.html",
-    "watch:rs": "cargo web start --release",
-    "test": "echo \"Error: no tests!\" && exit 1",
     "start": "run-s serve"
   },
   "dependencies": {
