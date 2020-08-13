@@ -4,6 +4,6 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "wasm-pack build --target web --out-name wasm --out-dir ./static/build && cargo build --release"
+    "build": "wasm-pack build --target web --out-name wasm --out-dir ./static/build && cargo build --release && mkdir /public && cp -R ./static /public"
   }
 }
