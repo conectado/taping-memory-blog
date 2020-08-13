@@ -10,6 +10,6 @@ fn index() -> &'static str {
 fn main() {
     rocket::ignite()
         .mount("/", routes![index])
-        .mount("/public", StaticFiles::from("/static"))
+        .mount("/", StaticFiles::from("./static"))
         .launch();
 }
