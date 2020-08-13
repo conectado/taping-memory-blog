@@ -4,11 +4,6 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "wasm-pack build --target web --out-name wasm --out-dir ./static/build",
-    "start": "miniserve ./static --index index.html"
-  },
-  "dependencies": {
-    "miniserve": "^0.2.1",
-    "wasm-pack": "^0.9.1"
+    "build": "wasm-pack build --target web --out-name wasm --out-dir ./static/build && cargo build --release"
   }
 }
