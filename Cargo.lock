@@ -4,6 +4,8 @@
 name = "WebBlog"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "http",
  "js-sys",
  "rocket",
  "rocket_contrib",

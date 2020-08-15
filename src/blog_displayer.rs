@@ -1,8 +1,8 @@
+use crate::request_loader::Displayer;
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
-use yew::virtual_dom::VNode;
-use yew::web_sys;
-use yew::Html;
+use yew::virtual_dom::{VNode, VText};
+use yew::{web_sys, Html};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,19 +14,7 @@ pub struct Options {
     pub smarty_pants: bool,
 }
 
-#[wasm_bindgen(inline_js = "export function set_marked_options(info){ 
-    console.log(info);
-    info.highlight = (code, lang) => {
-            if(!!(lang && hljs.getLanguage(lang))) 
-            {
-                return hljs.highlight(lang,code).value;
-            } 
-
-            return code;
-        };
-
-    marked.setOptions(info); 
-    }")]
+#[wasm_bindgen(module = "/js_snippets/set_marked_options.js")]
 extern "C" {
     fn set_marked_options(info: JsValue);
 }
@@ -36,11 +24,17 @@ extern "C" {
     fn marked(code: &str) -> String;
 }
 
-pub fn view_code(value: &str) -> Html {
+fn create_markdown_container() -> web_sys::Element {
     let window = web_sys::window().expect("Can't find window");
     let document = window.document().expect("Can't find document");
     let div = document.create_element("div").expect("Couldn't create div");
     div.set_class_name("markdown");
+    div
+}
+
+fn view_code(value: &str) -> Html {
+    let div = create_markdown_container();
+
     let options = JsValue::from_serde(&Options {
         gfm: true,
         breaks: false,
@@ -53,8 +47,18 @@ pub fn view_code(value: &str) -> Html {
     set_marked_options(options);
 
     div.set_inner_html(marked(value).as_ref());
+
     let node = web_sys::Node::from(div);
     VNode::VRef(node)
 }
 
-pub mod model;
+pub struct BlogDisplayer {}
+
+impl Displayer for BlogDisplayer {
+    fn display(text: &Option<String>) -> VNode {
+        match &text {
+            Some(value) => view_code(&value),
+            None => VNode::from(VText::new("Loading...".to_string())),
+        }
+    }
+}

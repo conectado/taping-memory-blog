@@ -15,6 +15,8 @@ serde_derive = "^1.0"
 js-sys = "^0.3"
 wasm-bindgen-futures = "^0.4"
 rocket = "^0.4"
+http = "^0.2"
+anyhow = "^1.0"
 
 [dependencies.rocket_contrib]
 version = "^0.4"
