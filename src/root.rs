@@ -1,7 +1,24 @@
 use crate::blog_displayer::BlogDisplayer;
+use crate::list_displayer::Articles;
+use crate::list_displayer::ListDisplayer;
 use crate::RequestLoader;
+use anyhow::Error;
+use yew::format::Json;
 use yew::prelude::*;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew_router::prelude::*;
+use yew_router::service::RouteService;
+
+const ARTICLES_URL: &'static str = "/article_list";
+const ARTICLE_URL: &'static str = "/articles";
+
+#[derive(Switch, Clone)]
+pub enum AppRoute {
+    #[to = "/articles/{post_name}"]
+    ViewPost(String),
+    #[to = "/"]
+    List,
+}
 
 pub struct Root {
     props: RootProperties,
@@ -31,8 +48,30 @@ impl Component for Root {
     }
 
     fn view(&self) -> Html {
+        let route_service = RouteService::<AppRoute>::new();
+
         html! {
-            <RequestLoader<BlogDisplayer> url=&self.props.url/>
+            <Router<AppRoute, ()>
+                render = Router::render(move |switch: AppRoute|
+                    match switch {
+                        AppRoute::ViewPost(_) => html! {
+                            <RequestLoader<BlogDisplayer, Result<String, Error>> url=route_service.get_path()/>
+                        },
+                        AppRoute::List => html! {
+                            <RequestLoader<ListDisplayer, Json<Result<Articles, Error>>> url=ARTICLES_URL/>
+                        },
+                    }
+                )
+            />
         }
+        /*
+        html! {
+        }
+        */
+        /*
+        html! {
+            <RequestLoader<ListDisplayer, Json<Result<Articles, Error>>> url=&self.props.url/>
+        }
+        */
     }
 }

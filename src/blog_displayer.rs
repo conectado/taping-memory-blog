@@ -1,4 +1,5 @@
 use crate::request_loader::Displayer;
+use anyhow::Error;
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
 use yew::virtual_dom::{VNode, VText};
@@ -54,10 +55,13 @@ fn view_code(value: &str) -> Html {
 
 pub struct BlogDisplayer {}
 
-impl Displayer for BlogDisplayer {
-    fn display(text: &Option<String>) -> VNode {
+impl Displayer<Result<String, Error>> for BlogDisplayer {
+    fn display(text: &Option<Result<String, Error>>) -> VNode {
         match &text {
-            Some(value) => view_code(&value),
+            Some(result) => match result {
+                Ok(value) => view_code(value),
+                _ => VNode::from(VText::new("Error!".to_string())),
+            },
             None => VNode::from(VText::new("Loading...".to_string())),
         }
     }
