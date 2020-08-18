@@ -23,7 +23,6 @@ impl Displayer<Json<Result<Articles, Error>>> for ListDisplayer {
                             for arts.articles.iter().map(|item| {
                                 html!{
                                     <li>
-                                        //<a href={"articles/".to_string() + item}>{item}</a>
                                         <RouterAnchor<AppRoute> route={AppRoute::ViewPost(item.clone())}>{item}</RouterAnchor<AppRoute>>
                                     </li>
                                 }

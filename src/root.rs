@@ -1,16 +1,11 @@
 use crate::blog_displayer::BlogDisplayer;
-use crate::list_displayer::Articles;
-use crate::list_displayer::ListDisplayer;
-use crate::RequestLoader;
+use crate::constants;
+use crate::list_displayer::{Articles, ListDisplayer};
+use crate::request_loader::RequestLoader;
 use anyhow::Error;
 use yew::format::Json;
-use yew::prelude::*;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::prelude::*;
-use yew_router::service::RouteService;
-
-const ARTICLES_URL: &'static str = "/article_list";
-const ARTICLE_URL: &'static str = "/articles";
 
 #[derive(Switch, Clone)]
 pub enum AppRoute {
@@ -20,24 +15,15 @@ pub enum AppRoute {
     List,
 }
 
-pub struct Root {
-    props: RootProperties,
-}
-
-#[derive(Properties, Debug, Clone, PartialEq)]
-pub struct RootProperties {
-    pub url: String,
-}
+pub struct Root {}
 
 impl Component for Root {
-    type Properties = RootProperties;
+    type Properties = ();
     type Message = ();
 
-    fn create(props: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Root { props }
+    fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
+        Root {}
     }
-
-    fn rendered(&mut self, _first_render: bool) {}
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
         false
@@ -48,30 +34,19 @@ impl Component for Root {
     }
 
     fn view(&self) -> Html {
-        let route_service = RouteService::<AppRoute>::new();
-
         html! {
             <Router<AppRoute, ()>
                 render = Router::render(move |switch: AppRoute|
                     match switch {
-                        AppRoute::ViewPost(_) => html! {
-                            <RequestLoader<BlogDisplayer, Result<String, Error>> url=route_service.get_path()/>
+                        AppRoute::ViewPost(article) => html! {
+                            <RequestLoader<BlogDisplayer, Result<String, Error>> url={("/articles/".to_string() + &article[..])}/>
                         },
                         AppRoute::List => html! {
-                            <RequestLoader<ListDisplayer, Json<Result<Articles, Error>>> url=ARTICLES_URL/>
+                            <RequestLoader<ListDisplayer, Json<Result<Articles, Error>>> url=constants::ARTICLE_LIST_URI/>
                         },
                     }
                 )
             />
         }
-        /*
-        html! {
-        }
-        */
-        /*
-        html! {
-            <RequestLoader<ListDisplayer, Json<Result<Articles, Error>>> url=&self.props.url/>
-        }
-        */
     }
 }

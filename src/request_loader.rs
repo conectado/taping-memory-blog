@@ -1,17 +1,13 @@
-use crate::root::AppRoute;
 use http::{Request, Response};
 use yew::format::Text;
 use yew::prelude::*;
-use yew::services::fetch::FetchTask;
-use yew::services::ConsoleService;
-use yew::services::FetchService;
+use yew::services::{fetch::FetchTask, FetchService};
 use yew::virtual_dom::VNode;
 use yew::{format::Nothing, html, Component, ComponentLink, Html, ShouldRender};
-use yew_router::service::RouteService;
 
 pub struct RequestLoader<T: Displayer<U> + 'static, U: From<Text> + 'static> {
     props: RequestLoaderProps,
-    link: ComponentLink<Self>,
+    phantom: std::marker::PhantomData<T>,
     #[allow(dead_code)]
     fetch_task: FetchTask, // Needed to keep the ref alive in scope
     display_text: Option<U>,
@@ -36,12 +32,10 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     type Message = FetchMessage<U>;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        //let fetch_task = fetch_article(&props.url, &link);
-        //let route_service = RouteService::<AppRoute>::new();
         let fetch_task = fetch_article_list(&props.url, &link);
         RequestLoader {
             props,
-            link,
+            phantom: std::marker::PhantomData,
             fetch_task,
             display_text: None,
         }
@@ -85,8 +79,6 @@ fn fetch_article_list<T: Displayer<U>, U: From<Text>>(
     let get_req = Request::get(url).body(Nothing).unwrap();
     let callback = link.callback(|response: Response<U>| {
         if response.status().is_success() {
-            ConsoleService::log("Success!!");
-
             FetchMessage::Success(response.into_body())
         } else {
             FetchMessage::Failure

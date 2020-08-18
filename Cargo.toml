@@ -6,7 +6,7 @@ edition = "2018"
 
 [lib]
 name = "web_blog_lib"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [dependencies]
 yew = "^0.17"
@@ -21,7 +21,6 @@ yew-router = "^0.14"
 
 [dependencies.rocket_contrib]
 version = "^0.4"
-default-feature = false
 features = ["serve"]
 
 [dependencies.wasm-bindgen]
@@ -30,3 +29,4 @@ features = ["serde-serialize", "nightly"]
 
 [[bin]]
 name = "server"
+
