@@ -23,7 +23,7 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
                         {
                             for arts.articles.iter().map(|item| {
                                 html!{
-                                    <div class="border container rounded" style="margin-top: 1%">
+                                    <div class="border container rounded" style="margin-top: 1%; -webkit-line-clamp: 9; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">
                                         <BlogDisplayerComponent url={("/articles/".to_string() + item)} />
                                     </div>
                                 }
