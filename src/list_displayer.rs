@@ -1,20 +1,26 @@
 use crate::article_list::Articles;
 use crate::request_loader::Displayer;
+use crate::request_loader::RequestLoader;
 use crate::root::AppRoute;
+use crate::spinner::spinner;
 use anyhow::Error;
 use yew::format::Json;
 use yew::prelude::*;
-use yew::virtual_dom::{VNode, VText};
+use yew::virtual_dom::VNode;
 use yew_router::components::RouterAnchor;
 
-pub struct ListDisplayer {}
+pub type ListDisplayerComponent = RequestLoader<ListDisplayer, Json<Result<Articles, Error>>>;
+
+pub struct ListDisplayer;
 
 impl Displayer<Json<Result<Articles, Error>>> for ListDisplayer {
     fn display(text: &Option<Json<Result<Articles, Error>>>) -> VNode {
         match text {
             Some(json) => match &json.0 {
                 Ok(arts) => {
-                    html! {{
+                    html! {
+                        <ul>
+                        {
                             for arts.articles.iter().map(|item| {
                                 html!{
                                     <li>
@@ -22,11 +28,13 @@ impl Displayer<Json<Result<Articles, Error>>> for ListDisplayer {
                                     </li>
                                 }
                             })
-                    }}
+                        }
+                        </ul>
+                    }
                 }
-                _ => VNode::from(VText::new("Error!".to_string())),
+                _ => html! {<p>{"Error"}</p>},
             },
-            None => VNode::from(VText::new("Loading...".to_string())),
+            None => spinner(),
         }
     }
 }

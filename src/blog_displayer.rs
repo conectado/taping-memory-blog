@@ -1,13 +1,18 @@
 use crate::request_loader::Displayer;
+use crate::request_loader::RequestLoader;
+use crate::spinner::spinner;
 use anyhow::Error;
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
-use yew::virtual_dom::{VNode, VText};
+use yew::html;
+use yew::virtual_dom::VNode;
 use yew::{web_sys, Html};
+
+pub type BlogDisplayerComponent = RequestLoader<BlogDisplayer, Result<String, Error>>;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Options {
+struct Options {
     pub gfm: bool,
     pub breaks: bool,
     pub header_ids: bool,
@@ -53,16 +58,16 @@ fn view_code(value: &str) -> Html {
     VNode::VRef(node)
 }
 
-pub struct BlogDisplayer {}
+pub struct BlogDisplayer;
 
 impl Displayer<Result<String, Error>> for BlogDisplayer {
     fn display(text: &Option<Result<String, Error>>) -> VNode {
         match &text {
             Some(result) => match result {
                 Ok(value) => view_code(value),
-                _ => VNode::from(VText::new("Error!".to_string())),
+                _ => html! { <p>{"error"}</p> },
             },
-            None => VNode::from(VText::new("Loading...".to_string())),
+            None => spinner(),
         }
     }
 }

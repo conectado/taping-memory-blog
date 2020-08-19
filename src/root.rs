@@ -1,10 +1,7 @@
-use crate::article_list::Articles;
-use crate::blog_displayer::BlogDisplayer;
+use crate::blog_displayer::BlogDisplayerComponent;
+use crate::blog_preview_list::BlogPreviewListDisplayerComponent;
 use crate::constants;
-use crate::list_displayer::ListDisplayer;
-use crate::request_loader::RequestLoader;
-use anyhow::Error;
-use yew::format::Json;
+use crate::list_displayer::ListDisplayerComponent;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::prelude::*;
 
@@ -16,7 +13,7 @@ pub enum AppRoute {
     List,
 }
 
-pub struct Root {}
+pub struct Root;
 
 impl Component for Root {
     type Properties = ();
@@ -36,18 +33,22 @@ impl Component for Root {
 
     fn view(&self) -> Html {
         html! {
-            <Router<AppRoute, ()>
-                render = Router::render(move |switch: AppRoute|
-                    match switch {
-                        AppRoute::ViewPost(article) => html! {
-                            <RequestLoader<BlogDisplayer, Result<String, Error>> url={("/articles/".to_string() + &article[..])}/>
-                        },
-                        AppRoute::List => html! {
-                            <RequestLoader<ListDisplayer, Json<Result<Articles, Error>>> url=constants::ARTICLE_LIST_URI/>
-                        },
-                    }
-                )
-            />
+            <body>
+                <div class="bg-dark text-white" style="overflow: auto">
+                    <Router<AppRoute, ()>
+                        render = Router::render(move |switch: AppRoute|
+                            match switch {
+                                AppRoute::ViewPost(article) => html! {
+                                    <BlogDisplayerComponent url={("/articles/".to_string() + &article[..])}/>
+                                },
+                                AppRoute::List => html! {
+                                    <BlogPreviewListDisplayerComponent url=constants::ARTICLE_LIST_URI/>
+                                },
+                            }
+                        )
+                    />
+                </div>
+            </body>
         }
     }
 }

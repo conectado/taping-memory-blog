@@ -8,14 +8,30 @@ use web_blog_lib::{article_list::Articles, constants};
 
 #[get("/article_list")]
 fn list_articles() -> Json<Articles> {
-    let articles: Vec<String> = fs::read_dir(format!(
+    let mut articles: Vec<_> = fs::read_dir(format!(
         "{}{}",
         constants::STATIC_URL,
         constants::ARTICLES_PATH
     ))
     .unwrap()
-    .map(|res| res.unwrap().file_name().into_string().unwrap())
     .collect();
+
+    articles.sort_by(|a, b| {
+        a.as_ref()
+            .unwrap()
+            .metadata()
+            .unwrap()
+            .created()
+            .unwrap()
+            .cmp(&b.as_ref().unwrap().metadata().unwrap().created().unwrap())
+    });
+
+    articles.reverse();
+
+    let articles = articles
+        .iter()
+        .map(|res| res.as_ref().unwrap().file_name().into_string().unwrap())
+        .collect();
 
     Json(Articles { articles })
 }

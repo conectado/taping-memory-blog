@@ -6,9 +6,11 @@ pub mod article_list;
 pub mod constants;
 
 mod blog_displayer;
+mod blog_preview_list;
 mod list_displayer;
 mod request_loader;
 mod root;
+mod spinner;
 
 #[wasm_bindgen(start)]
 pub async fn run_app() {
