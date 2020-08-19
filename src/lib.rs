@@ -2,6 +2,7 @@ use root::Root;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
+pub mod article_list;
 pub mod constants;
 
 mod blog_displayer;

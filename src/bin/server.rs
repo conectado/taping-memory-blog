@@ -1,13 +1,13 @@
 #![feature(proc_macro_hygiene, decl_macro)]
-use rocket::{get, response::content, routes};
-use rocket_contrib::serve::StaticFiles;
+use rocket::{get, routes};
+use rocket_contrib::{json::Json, serve::StaticFiles};
 
 use std::fs;
 
-use web_blog_lib::constants;
+use web_blog_lib::{article_list::Articles, constants};
 
 #[get("/article_list")]
-fn list_articles() -> content::Json<String> {
+fn list_articles() -> Json<Articles> {
     let articles: Vec<String> = fs::read_dir(format!(
         "{}{}",
         constants::STATIC_URL,
@@ -17,7 +17,7 @@ fn list_articles() -> content::Json<String> {
     .map(|res| res.unwrap().file_name().into_string().unwrap())
     .collect();
 
-    content::Json(format!("{{\"articles\": {:?} }}", articles))
+    Json(Articles { articles })
 }
 
 fn main() {

@@ -1,6 +1,7 @@
+use crate::article_list::Articles;
 use crate::blog_displayer::BlogDisplayer;
 use crate::constants;
-use crate::list_displayer::{Articles, ListDisplayer};
+use crate::list_displayer::ListDisplayer;
 use crate::request_loader::RequestLoader;
 use anyhow::Error;
 use yew::format::Json;

@@ -1,18 +1,13 @@
+use crate::article_list::Articles;
 use crate::request_loader::Displayer;
 use crate::root::AppRoute;
 use anyhow::Error;
-use serde_derive::Deserialize;
 use yew::format::Json;
 use yew::prelude::*;
 use yew::virtual_dom::{VNode, VText};
 use yew_router::components::RouterAnchor;
 
 pub struct ListDisplayer {}
-
-#[derive(Deserialize, Debug)]
-pub struct Articles {
-    pub articles: Vec<String>,
-}
 
 impl Displayer<Json<Result<Articles, Error>>> for ListDisplayer {
     fn display(text: &Option<Json<Result<Articles, Error>>>) -> VNode {
