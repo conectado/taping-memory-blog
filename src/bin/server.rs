@@ -19,11 +19,8 @@ fn list_articles() -> Json<Articles> {
     articles.sort_by(|a, b| {
         a.as_ref()
             .unwrap()
-            .metadata()
-            .unwrap()
-            .created()
-            .unwrap()
-            .cmp(&b.as_ref().unwrap().metadata().unwrap().created().unwrap())
+            .file_name()
+            .cmp(&b.as_ref().unwrap().file_name())
     });
 
     articles.reverse();
