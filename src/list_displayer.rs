@@ -18,7 +18,7 @@ impl Displayer<Json<Result<Articles, Error>>> for ListDisplayer {
                             for arts.articles.iter().map(|item| {
                                 html!{
                                     <li>
-                                        <RouterAnchor<AppRoute> route={AppRoute::ViewPost(item.clone())}>{item}</RouterAnchor<AppRoute>>
+                                        <RouterAnchor<AppRoute> route={AppRoute::ViewPost(item.clone())}>{convert_to_title(item)}</RouterAnchor<AppRoute>>
                                     </li>
                                 }
                             })
@@ -29,4 +29,12 @@ impl Displayer<Json<Result<Articles, Error>>> for ListDisplayer {
             None => VNode::from(VText::new("Loading...".to_string())),
         }
     }
+}
+
+fn convert_to_title(file_name: &str) -> String {
+    let title = file_name.replace("_", " ");
+    let title: Vec<&str> = title.split(".").collect();
+    let mut title = title[0].to_string();
+    title.replace_range(0..1, &title[0..1].to_uppercase());
+    title
 }
