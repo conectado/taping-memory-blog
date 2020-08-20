@@ -29,7 +29,7 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
                                         <div style="display: block; overflow: hidden;">
                                             <BlogDisplayerComponent  url={("/articles/".to_string() + item)} />
                                         </div>
-                                        <div class="text-right" style="display: block;">
+                                        <div class="text-right" style="display: block; margin: 1em; font-size: 1.1em;">
                                             <RouterAnchor<AppRoute>  route={AppRoute::ViewPost(item.clone())}>{"See more..."}</RouterAnchor<AppRoute>>
                                         </div>
                                     </div>

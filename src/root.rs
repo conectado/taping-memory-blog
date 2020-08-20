@@ -1,7 +1,6 @@
 use crate::blog_displayer::BlogDisplayerComponent;
 use crate::blog_preview_list::BlogPreviewListDisplayerComponent;
 use crate::constants;
-use crate::list_displayer::ListDisplayerComponent;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::prelude::*;
 
@@ -34,7 +33,7 @@ impl Component for Root {
     fn view(&self) -> Html {
         html! {
             <body>
-                <div class="bg-dark text-white" style="overflow: auto">
+                <div class="bg-dark text-white" style="overflow: auto; position: fixed; height: 100%; width: 100%;">
                     <Router<AppRoute, ()>
                         render = Router::render(move |switch: AppRoute|
                             match switch {

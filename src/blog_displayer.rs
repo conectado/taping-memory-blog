@@ -64,7 +64,11 @@ impl Displayer<Result<String, Error>> for BlogDisplayer {
     fn display(text: &Option<Result<String, Error>>) -> VNode {
         match &text {
             Some(result) => match result {
-                Ok(value) => view_code(value),
+                Ok(value) => html! {
+                    <div style="padding: 1em; word-break: break-word" class="container">
+                        {view_code(value)}
+                    </div>
+                },
                 _ => html! { <p>{"error"}</p> },
             },
             None => spinner(),
