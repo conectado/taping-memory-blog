@@ -34,6 +34,11 @@ impl Component for Root {
         html! {
             <body>
                 <div class="bg-dark text-white" style="overflow: auto; position: fixed; height: 100%; width: 100%;">
+                    <div>
+                        <h3 class="container text-center font-weight-bold">
+                            {"Conectado's Blog"}
+                        </h3>
+                    </div>
                     <Router<AppRoute, ()>
                         render = Router::render(move |switch: AppRoute|
                             match switch {
