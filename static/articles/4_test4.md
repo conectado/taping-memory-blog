@@ -23,6 +23,12 @@ clipeum** dumque versat harundinibus inermi. Lacedaemoniumque tempora
 Thestorides retractant indotata nymphis. Et agmen, potuit non lapides tangat,
 cur non legit Demoleon annisque arbor undas viri ocior, stagni proboque.
 
+```rs
+fn main() {
+  println!("Hello, world!");
+}
+```
+
 ```
     var banner_architecture_it = usbWebmailIm(macRealityWeb(
             computingOrientation, eCase + dma_http), bitrateGisBiometrics -

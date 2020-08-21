@@ -63,7 +63,7 @@ pub struct BlogDisplayer;
 impl Displayer<Result<String, Error>> for BlogDisplayer {
     fn display(text: &Option<Result<String, Error>>) -> VNode {
         html! {
-            <div style="padding: 1em; word-break: break-word" class="container">
+            <div style="padding: 1em; word-break: break-word" class="container bg-dark">
                 {
                     match &text {
                         Some(result) => match result {

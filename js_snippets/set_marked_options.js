@@ -6,7 +6,7 @@ export function set_marked_options(info){
       return hljs.highlight(lang,code).value;
     } 
 
-    return code;
+    return hljs.highlightAuto(code).value;
   };
 
   marked.setOptions(info); 

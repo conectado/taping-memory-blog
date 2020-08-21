@@ -28,7 +28,7 @@ impl Component for Root {
         html! {
             <body>
                 <div class="text-white" style="overflow: auto; position: fixed; height: 100%; width: 100%; background-color: black;">
-                    <div class="bg-dark">
+                    <div class="bg-dark sticky-top">
                         <div class="container" style="display: inline">
                             <RouterAnchor<AppRoute> route={AppRoute::List}>{"Home"}</RouterAnchor<AppRoute>>
                         </div>
