@@ -25,8 +25,8 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
                         {
                             for arts.articles.iter().map(|item| {
                                 html!{
-                                    <div class="border container rounded" style="margin-top: 1%; -webkit-line-clamp: 9; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">
-                                        <div style="display: block; overflow: hidden;">
+                                    <div class="container rounded bg-dark" style="margin-top: 1%; -webkit-line-clamp: 9; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">
+                                        <div style="display: block; overflow: hidden; ">
                                             <BlogDisplayerComponent  url={("/articles/".to_string() + item)} />
                                         </div>
                                         <div class="text-right" style="display: block; margin: 1em; font-size: 1.1em;">

@@ -2,6 +2,7 @@ use crate::blog_displayer::BlogDisplayerComponent;
 use crate::blog_preview_list::BlogPreviewListDisplayerComponent;
 use crate::constants;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew_router::components::RouterAnchor;
 use yew_router::prelude::*;
 
 #[derive(Switch, Clone)]
@@ -33,9 +34,12 @@ impl Component for Root {
     fn view(&self) -> Html {
         html! {
             <body>
-                <div class="bg-dark text-white" style="overflow: auto; position: fixed; height: 100%; width: 100%;">
-                    <div>
-                        <h3 class="container text-center font-weight-bold">
+                <div class="text-white" style="overflow: auto; position: fixed; height: 100%; width: 100%; background-color: black;">
+                    <div class="bg-dark">
+                        <div class="container" style="display: inline">
+                            <RouterAnchor<AppRoute> route={AppRoute::List}>{"Home"}</RouterAnchor<AppRoute>>
+                        </div>
+                        <h3 class="text-center font-weight-bold container" style="padding-top: 0.5em; padding-bottom: 0.5em; display: inline flow-root;">
                             {"Conectado's Blog"}
                         </h3>
                     </div>
