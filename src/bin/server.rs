@@ -8,13 +8,13 @@ use web_blog_lib::{article_list::Articles, constants};
 
 #[get("/article_list")]
 fn list_articles() -> Json<Articles> {
-    let mut articles: Vec<_> = fs::read_dir(format!(
-        "{}{}",
-        constants::STATIC_URL,
-        constants::ARTICLES_PATH
-    ))
-    .unwrap()
-    .collect();
+    let articles_path = format!("{}{}", constants::STATIC_URL, constants::ARTICLES_PATH);
+    let mut articles: Vec<_> = fs::read_dir(&articles_path)
+        .expect(&format!(
+            "Error ocurred while listing statics files in directory: {}",
+            &articles_path
+        ))
+        .collect();
 
     articles.sort_by(|a, b| {
         a.as_ref()
