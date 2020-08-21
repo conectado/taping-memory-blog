@@ -1,17 +1,10 @@
 use crate::blog_displayer::BlogDisplayerComponent;
 use crate::blog_preview_list::BlogPreviewListDisplayerComponent;
 use crate::constants;
+use crate::routes::AppRoute;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::components::RouterAnchor;
 use yew_router::prelude::*;
-
-#[derive(Switch, Clone)]
-pub enum AppRoute {
-    #[to = "/articles/{post_name}"]
-    ViewPost(String),
-    #[to = "/"]
-    List,
-}
 
 pub struct Root;
 

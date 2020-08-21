@@ -10,6 +10,7 @@ mod blog_displayer;
 mod blog_preview_list;
 mod request_loader;
 mod root;
+mod routes;
 mod spinner;
 
 #[wasm_bindgen(start)]

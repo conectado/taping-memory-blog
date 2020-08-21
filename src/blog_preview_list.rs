@@ -4,7 +4,7 @@ use crate::article_list::Articles;
 use crate::blog_displayer::BlogDisplayerComponent;
 use crate::request_loader::Displayer;
 use crate::request_loader::RequestLoader;
-use crate::root::AppRoute;
+use crate::routes::AppRoute;
 use crate::spinner::spinner;
 use anyhow::Error;
 use yew::format::Json;
