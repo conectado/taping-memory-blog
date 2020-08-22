@@ -44,9 +44,9 @@ fn view_code(value: &str) -> Html {
     let options = JsValue::from_serde(&Options {
         gfm: true,
         breaks: false,
-        header_ids: false,
+        header_ids: true,
         smart_lists: true,
-        smarty_pants: false,
+        smarty_pants: true,
     })
     .unwrap();
 
@@ -68,7 +68,7 @@ impl Displayer<Result<String, Error>> for BlogDisplayer {
                     match &text {
                         Some(result) => match result {
                             Ok(value) => html! {
-                                <div style="padding: 1em; word-break: break-word" class="container">
+                                <div style="padding: 1em; word-break: break-word" class="text-white container markdown-body">
                                     {view_code(value)}
                                 </div>
                             },
