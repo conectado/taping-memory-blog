@@ -18,6 +18,12 @@ rocket = "^0.4"
 http = "^0.2"
 anyhow = "^1.0"
 yew-router = "^0.14"
+pulldown-cmark = "^0.7"
+wee_alloc = "^0.4"
+
+[dependencies.web-sys]
+version = "*"
+features = ["NodeList"]
 
 [dependencies.rocket_contrib]
 version = "^0.4"

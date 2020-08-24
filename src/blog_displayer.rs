@@ -2,33 +2,21 @@ use crate::request_loader::Displayer;
 use crate::request_loader::RequestLoader;
 use crate::spinner::spinner;
 use anyhow::Error;
-use serde::Serialize;
+use pulldown_cmark as pc;
 use wasm_bindgen::prelude::*;
 use yew::html;
 use yew::virtual_dom::VNode;
 use yew::{web_sys, Html};
 
-pub type BlogDisplayerComponent = RequestLoader<BlogDisplayer, Result<String, Error>>;
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct Options {
-    pub gfm: bool,
-    pub breaks: bool,
-    pub header_ids: bool,
-    pub smart_lists: bool,
-    pub smarty_pants: bool,
-}
-
-#[wasm_bindgen(module = "/js_snippets/set_marked_options.js")]
-extern "C" {
-    fn set_marked_options(info: JsValue);
-}
-
 #[wasm_bindgen]
 extern "C" {
-    fn marked(code: &str) -> String;
+    type hljs;
+
+    #[wasm_bindgen(static_method_of = hljs)]
+    pub fn highlightBlock(block: JsValue);
 }
+
+pub type BlogDisplayerComponent = RequestLoader<BlogDisplayer, Result<String, Error>>;
 
 fn create_markdown_container() -> web_sys::Element {
     let window = web_sys::window().expect("Can't find window");
@@ -39,20 +27,22 @@ fn create_markdown_container() -> web_sys::Element {
 }
 
 fn view_code(value: &str) -> Html {
+    let parser = pc::Parser::new(value);
+    let mut html_output = String::new();
+    pc::html::push_html(&mut html_output, parser);
+
     let div = create_markdown_container();
 
-    let options = JsValue::from_serde(&Options {
-        gfm: true,
-        breaks: false,
-        header_ids: true,
-        smart_lists: true,
-        smarty_pants: true,
-    })
-    .unwrap();
+    div.set_inner_html(&html_output);
+    let code_blocks = div.query_selector_all("pre code").unwrap();
+    for i in 0..code_blocks.length() {
+        hljs::highlightBlock(JsValue::from(code_blocks.get(i).unwrap()));
+    }
 
-    set_marked_options(options);
-
-    div.set_inner_html(marked(value).as_ref());
+    /*
+    div.dispatch_event(&web_sys::Event::new("code").unwrap())
+        .unwrap();
+    */
 
     let node = web_sys::Node::from(div);
     VNode::VRef(node)
