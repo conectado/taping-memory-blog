@@ -10,10 +10,12 @@ use web_blog_lib::{article_list::Articles, constants};
 fn list_articles() -> Json<Articles> {
     let articles_path = format!("{}{}", constants::STATIC_URL, constants::ARTICLES_PATH);
     let mut articles: Vec<_> = fs::read_dir(&articles_path)
-        .expect(&format!(
-            "Error ocurred while listing statics files in directory: {}",
-            &articles_path
-        ))
+        .unwrap_or_else(|_| {
+            panic!(
+                "Error ocurred while listing statics files in directory: {}",
+                &articles_path
+            )
+        })
         .collect();
 
     articles.sort_by(|a, b| {
