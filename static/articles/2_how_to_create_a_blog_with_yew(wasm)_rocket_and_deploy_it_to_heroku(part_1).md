@@ -68,8 +68,15 @@ With this I want to say, that sure, maybe using Jekyll would have been more inte
 
 ## Pre-requisities
 
+### Knowledge
+
 So, to follow this tutorial you will need some very basic HTML and JavaScript knowledge(Although you could copy paste the code, it's pretty boilerplatey).
 
-I expect you to have read the (Rust Book)[https://doc.rust-lang.org/stable/book/]. Although the Rust used isn't that advanced I will not be explaining any concept explained in the book.
+I expect you to have read the [Rust Book](https://doc.rust-lang.org/stable/book/). Although the Rust used isn't that advanced I will not be explaining any concept explained in the book.
 
-And for the 
+### Enviroment
+
+You need to have [rustup](https://rustup.rs/) installed, I will walk through the rest of the dependencies.
+
+
+## [Part 2](#articles/1_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_2).md)
