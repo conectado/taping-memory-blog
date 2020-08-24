@@ -39,11 +39,6 @@ fn view_code(value: &str) -> Html {
         hljs::highlightBlock(JsValue::from(code_blocks.get(i).unwrap()));
     }
 
-    /*
-    div.dispatch_event(&web_sys::Event::new("code").unwrap())
-        .unwrap();
-    */
-
     let node = web_sys::Node::from(div);
     VNode::VRef(node)
 }

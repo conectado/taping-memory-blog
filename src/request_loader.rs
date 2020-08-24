@@ -8,9 +8,9 @@ use yew::{format::Nothing, html, Component, ComponentLink, Html, ShouldRender};
 pub struct RequestLoader<T: Displayer<U> + 'static, U: From<Text> + 'static> {
     props: RequestLoaderProps,
     phantom: std::marker::PhantomData<T>,
-    #[allow(dead_code)]
-    fetch_task: FetchTask, // Needed to keep the ref alive in scope
-    display_text: Option<U>,
+    fetch_task: FetchTask,
+    display_value: Option<U>,
+    link: ComponentLink<Self>,
 }
 
 pub trait Displayer<U> {
@@ -23,8 +23,7 @@ pub struct RequestLoaderProps {
 }
 
 pub enum FetchMessage<T> {
-    Success(T),
-    Failure,
+    Loaded(T),
 }
 
 impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLoader<T, U> {
@@ -32,31 +31,27 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     type Message = FetchMessage<U>;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let fetch_task = fetch_article_list(&props.url, &link);
+        let _fetch_task = fetch_article_list(&props.url, &link);
         RequestLoader {
             props,
             phantom: std::marker::PhantomData,
-            fetch_task,
-            display_text: None,
+            fetch_task: _fetch_task,
+            display_value: None,
+            link,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            FetchMessage::Success(text) => {
-                self.display_text = Some(text);
-                true
-            }
-            FetchMessage::Failure => {
-                self.display_text = None;
-                true
-            }
-        }
+        let FetchMessage::Loaded(text) = msg;
+        self.display_value = Some(text);
+        true
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {
         if self.props != props {
+            self.display_value = None;
             self.props = props;
+            self.fetch_task = fetch_article_list(&self.props.url, &self.link);
             true
         } else {
             false
@@ -66,7 +61,7 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     fn view(&self) -> Html {
         html! {
             {
-                T::display(&self.display_text)
+                T::display(&self.display_value)
             }
         }
     }
@@ -77,13 +72,8 @@ fn fetch_article_list<T: Displayer<U>, U: From<Text>>(
     link: &ComponentLink<RequestLoader<T, U>>,
 ) -> FetchTask {
     let get_req = Request::get(url).body(Nothing).unwrap();
-    let callback = link.callback(|response: Response<U>| {
-        if response.status().is_success() {
-            FetchMessage::Success(response.into_body())
-        } else {
-            FetchMessage::Failure
-        }
-    });
+    let callback =
+        link.callback(|response: Response<U>| FetchMessage::Loaded(response.into_body()));
 
     FetchService::fetch(get_req, callback).unwrap()
 }
