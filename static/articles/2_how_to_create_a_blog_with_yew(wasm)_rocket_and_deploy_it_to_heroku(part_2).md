@@ -1,4 +1,4 @@
-# How I built this blog using only Rust (Part 1)
+# How I built this blog using only Rust
 ## With Yew(WASM) and Rocket and deployed it to Heroku
 
 As my first post in this blog I will go meta and write about how I built this blog, from start to finish. This will serve as some vague form of tutorial.
@@ -72,4 +72,3 @@ So, to follow this tutorial you will need some very basic HTML and JavaScript kn
 
 I expect you to have read the (Rust Book)[https://doc.rust-lang.org/stable/book/]. Although the Rust used isn't that advanced I will not be explaining any concept explained in the book.
 
-And for the 

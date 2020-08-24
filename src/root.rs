@@ -30,7 +30,9 @@ impl Component for Root {
                 <div class="text-white" style="overflow: auto; position: fixed; height: 100%; width: 100%; background-color: black;">
                     <div class="bg-dark sticky-top">
                         <div class="container" style="display: inline">
-                            <RouterAnchor<AppRoute> route={AppRoute::List}>{"Home"}</RouterAnchor<AppRoute>>
+                            <RouterAnchor<AppRoute> route={AppRoute::List}>
+                                <i class="fas fa-home" style="font-size: 2em; color: white;"></i>
+                            </RouterAnchor<AppRoute>>
                         </div>
                         <h3 class="text-center font-weight-bold container" style="padding-top: 0.5em; padding-bottom: 0.5em; display: inline flow-root;">
                             {"Conectado's Blog"}
