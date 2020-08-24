@@ -13,15 +13,15 @@ impl Component for Root {
     type Message = ();
 
     fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
-        Root {}
+        Root
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
-        false
+        true
     }
 
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
-        false
+        true
     }
 
     fn view(&self) -> Html {
