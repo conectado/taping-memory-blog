@@ -1,4 +1,7 @@
 #![recursion_limit = "256"]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 use root::Root;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
