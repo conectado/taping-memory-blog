@@ -22,7 +22,7 @@ fn create_markdown_container() -> web_sys::Element {
     let window = web_sys::window().expect("Can't find window");
     let document = window.document().expect("Can't find document");
     let div = document.create_element("div").expect("Couldn't create div");
-    div.set_class_name("markdown");
+    div.set_class_name("markdown-body");
     div
 }
 

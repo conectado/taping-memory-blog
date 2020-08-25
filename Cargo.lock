@@ -6,7 +6,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "http",
- "js-sys",
  "pulldown-cmark",
  "rocket",
  "rocket_contrib",
