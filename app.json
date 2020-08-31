@@ -1,0 +1,10 @@
+{
+  "name": "Web dev blog",
+  "description": "A developer's web blog",
+  "respository": "https://github.com/conectado/WebDevBlog",
+  "buildpacks": [
+    {
+      "url": "https://github.com/conectado/heroku-buildpack-rust-wasm-pack"
+    }
+  ]
+}
