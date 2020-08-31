@@ -26,7 +26,7 @@ fn create_markdown_container() -> web_sys::Element {
     div
 }
 
-fn view_code(value: &str) -> Html {
+fn view_markdown(value: &str) -> Html {
     let parser = pc::Parser::new(value);
     let mut html_output = String::new();
     pc::html::push_html(&mut html_output, parser);
@@ -54,7 +54,7 @@ impl Displayer<Result<String, Error>> for BlogDisplayer {
                         Some(result) => match result {
                             Ok(value) => html! {
                                 <div style="padding: 1em; word-break: break-word" class="text-white container markdown-body">
-                                    {view_code(value)}
+                                    {view_markdown(value)}
                                 </div>
                             },
                             _ => html! { <p>{"error"}</p> },

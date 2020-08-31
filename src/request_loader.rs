@@ -2,7 +2,6 @@ use http::{Request, Response};
 use yew::format::Text;
 use yew::prelude::*;
 use yew::services::{fetch::FetchTask, FetchService};
-use yew::virtual_dom::VNode;
 use yew::{format::Nothing, html, Component, ComponentLink, Html, ShouldRender};
 
 pub struct RequestLoader<T: Displayer<U> + 'static, U: From<Text> + 'static> {
@@ -14,7 +13,7 @@ pub struct RequestLoader<T: Displayer<U> + 'static, U: From<Text> + 'static> {
 }
 
 pub trait Displayer<U> {
-    fn display(text: &Option<U>) -> VNode;
+    fn display(value: &Option<U>) -> Html;
 }
 
 #[derive(Properties, Debug, Clone, PartialEq)]
@@ -31,11 +30,11 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     type Message = FetchMessage<U>;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let _fetch_task = fetch_article_list(&props.url, &link);
+        let fetch_task = fetch_link(&props.url, &link);
         RequestLoader {
             props,
             phantom: std::marker::PhantomData,
-            fetch_task: _fetch_task,
+            fetch_task,
             display_value: None,
             link,
         }
@@ -51,7 +50,7 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
         if self.props != props {
             self.display_value = None;
             self.props = props;
-            self.fetch_task = fetch_article_list(&self.props.url, &self.link);
+            self.fetch_task = fetch_link(&self.props.url, &self.link);
             true
         } else {
             false
@@ -67,7 +66,7 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     }
 }
 
-fn fetch_article_list<T: Displayer<U>, U: From<Text>>(
+fn fetch_link<T: Displayer<U>, U: From<Text>>(
     url: &str,
     link: &ComponentLink<RequestLoader<T, U>>,
 ) -> FetchTask {
