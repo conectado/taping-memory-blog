@@ -42,7 +42,7 @@ impl Component for Root {
                         render = Router::render(move |switch: AppRoute|
                             match switch {
                                 AppRoute::ViewPost(article) => html! {
-                                    <BlogDisplayerComponent url={format!("{}/{}", constants::ARTICLES_PATH,  &article[..])}/>
+                                    <BlogDisplayerComponent url={format!("/{}/{}", constants::ARTICLES_PATH,  &article[..])}/>
                                 },
                                 AppRoute::List => html! {
                                     <BlogPreviewListDisplayerComponent url=constants::ARTICLE_LIST_URI/>

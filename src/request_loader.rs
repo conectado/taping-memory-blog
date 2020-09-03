@@ -71,6 +71,7 @@ fn fetch_link<T: Displayer<U>, U: From<Text>>(
     link: &ComponentLink<RequestLoader<T, U>>,
 ) -> FetchTask {
     let get_req = Request::get(url).body(Nothing).unwrap();
+
     let callback =
         link.callback(|response: Response<U>| FetchMessage::Loaded(response.into_body()));
 
