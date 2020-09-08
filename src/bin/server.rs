@@ -43,22 +43,26 @@ fn list_articles() -> Json<Articles> {
 }
 
 #[get("/<path..>")]
-fn get_article(path: PathBuf, encoding: AcceptEncodingHeader) -> Option<EncodedContent> {
-    let file =
-        NamedFile::open(Path::new(constants::STATIC_URL).join(path)).expect("File not found");
-    let content_type =
-        ContentType::from_extension(file.path().extension().unwrap().to_str().unwrap());
-    Some(EncodedContent::new(
-        file,
-        encoding.accept_encoding,
-        content_type.unwrap_or(ContentType::Plain),
-    ))
+fn get_file(path: PathBuf, encoding: AcceptEncodingHeader) -> Option<EncodedContent> {
+    let file_path = Path::new(constants::STATIC_URL).join(path);
+    match NamedFile::open(&file_path) {
+        Ok(file) => {
+            let content_type =
+                ContentType::from_extension(file.path().extension().unwrap().to_str().unwrap());
+            Some(EncodedContent::new(
+                file,
+                encoding.accept_encoding,
+                content_type.unwrap_or(ContentType::Plain),
+            ))
+        }
+        _ => None,
+    }
 }
 
 fn main() {
     rocket::ignite()
         .mount("/", routes![list_articles])
-        .mount("/", routes![get_article])
+        .mount("/", routes![get_file])
         .mount("/", StaticFiles::from(constants::STATIC_URL))
         .launch();
 }

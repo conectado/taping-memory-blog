@@ -34,6 +34,7 @@ fn view_markdown(value: &str) -> Html {
     let div = create_markdown_container();
 
     div.set_inner_html(&html_output);
+
     let code_blocks = div.query_selector_all("pre code").unwrap();
     for i in 0..code_blocks.length() {
         hljs::highlightBlock(JsValue::from(code_blocks.get(i).unwrap()));
