@@ -7,7 +7,7 @@ use rocket_contrib::{json::Json, serve::StaticFiles};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use web_blog_lib::{
+use taping_memory_lib::{
     article_list::Articles,
     constants,
     encoded::{AcceptEncodingHeader, EncodedContent},

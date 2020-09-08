@@ -5,7 +5,7 @@ authors = ["conectado <conectado2@protonmail.com>"]
 edition = "2018"
 
 [lib]
-name = "web_blog_lib"
+name = "taping_memory_lib"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
