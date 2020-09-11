@@ -27,8 +27,8 @@ impl Component for Root {
     fn view(&self) -> Html {
         html! {
             <body>
-                <div class="text-white" style="overflow: auto; position: fixed; height: 100%; width: 100%; background-color: black;" id="bootstrap-override">
-                    <div class="bg-dark sticky-top">
+                <div class="text-element-white" style="overflow: auto; position: fixed; height: 100%; width: 100%;" id="background">
+                    <div class="bg-element-dark sticky-top">
                         <div class="container" style="display: inline">
                             <RouterAnchor<AppRoute> route={AppRoute::List}>
                                 <i class="fas fa-home" style="font-size: 2em; color: white;" alt="Home"></i>

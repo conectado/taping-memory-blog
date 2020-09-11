@@ -2,6 +2,10 @@
   background-color: initial;
 }
 
+.markdown-body {
+  font-family: Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif;
+}
+
 .markdown-body h1 {
   font-size: 2em;
   margin: .67em 0;
@@ -189,6 +193,18 @@
   word-wrap: normal;
 }
 
-#bootstrap-override .bg-dark {
-  background-color: #101025;
+.bg-element-dark {
+  background-color: #1b1b2b;
+}
+
+.bg-element-dark.sticky-top {
+  box-shadow: 0 0.5em 1em black;
+}
+
+.text-element-white {
+  color: #e8e8ed;
+}
+
+#background {
+  background-color: #14141c;
 }

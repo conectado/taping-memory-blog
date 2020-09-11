@@ -1,26 +1,42 @@
 # How I built this blog using only Rust (part 2)
 ## With Yew(WASM) and Rocket and deployed it to Heroku
 
+Well, then, let's get started building a blog.
+
+We will iteratively build the solution, little by little.
+
+### Yew hello world
+#### Preparing the environment
+
+First, let's prepare our environment and get a `Hello world!` message in the browser using Yew.
+
+Start by creating the project with `cargo`:
+
 ```bash
 cargo init --lib blog
 ```
 
-Edit `Cargo.toml`
-
-Add
+Now, edit `Cargo.toml` adding the following lines:
 
 ```toml
 [lib]
 crate-type = "cdylib"
 ```
 
-and in `[dependencies]` add
+This indicates that the lib will be compiled as a dynamic library that can link to other languages. Which makes sense, since we need interfacing with JavaScript.
 
-```
+To see more on why it's needed see [this wasm-pack documentation](https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/template-deep-dive/cargo-toml.html?highlight=cdylib#1--crate-type) and to see more on what each `crate-type` means see [this](https://doc.rust-lang.org/reference/linkage.html).
+
+In `[dependencies]` add of `Cargo.toml`:
+
+```toml
 yew = "^0.17"
 ```
 
-Now it should look something like this
+This is simply the [Yew](https://yew.rs/) library that we will be using to build the front-end.
+
+
+Now `Cargo.toml` should be looking something like this:
 
 ```toml
 Cargo.toml
@@ -28,7 +44,7 @@ Cargo.toml
 [package]
 name = "blog"
 version = "0.1.0"
-authors = ["conectado <gabrielalejandro7@gmail.com>"]
+authors = ["<Your username>"]
 edition = "2018"
    
 [lib] 
@@ -38,27 +54,41 @@ crate-type = ["cdylib"]
 yew = "^0.17"
 ```
 
-Now, let's install wasm-pack, let's use the [recommended method](https://rustwasm.github.io/wasm-pack/installer/)
+Now, we will install [wasm-pack](https://rustwasm.github.io), this will make the compilation and optimization of the package size extremely simple.
+
+To install wasm-pack, let's use the [recommended method](https://rustwasm.github.io/wasm-pack/installer/):
 
 ```bash
 curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 ```
 
-Now let's build the statics
+And voilà, you have wasm-pack running.
+
+Let's check that everything is running nicely, by building our "statics", although it won't do anything now.
 
 ```bash
 wasm-pack build --target web --out-name wasm --out-dir ./static/build
 ```
 
-If it all work it fine let's add something to the body of the app.
+This will output the built files into `./static/build` and the outputted JavaScript will be built to run in browser. For more options [see the wasm-pack docs](https://rustwasm.github.io/wasm-pack/book/commands/build.html).
 
-Add `wasm-bindgen` to the depenendencies
+#### Creating our first component: `HelloWorld`
+
+Now we need to build a component that will show `Hello world!` in the browser.
+
+For that we need a main function that can actually run in the browser and render components on the DOM.
+
+So, let's do that by adding the following dependency:
 
 ```toml
 wasm-bindgen = "^0.2"
 ```
 
-Now, update `src/lib.rs` like this so that we can have our *hello world* done. (We will go through the code in a moment)
+`wasm-bindgen` is the lib that will do the magic binding between JavaScript and Rust.
+
+In particular, it will let us create a main function such as that I talked about previously.
+
+So, let's update `src/lib.rs` to look like the following so that we can finally show "Hello world!" in the browser:
 
 ```rs
 src/lib.rs
@@ -97,9 +127,43 @@ pub fn run_app() {
 }
 ```
 
-Now let's add the `index.html` to be served as default
+Okay, let's break this down in parts.
 
-Create the file `static/index.html` with the contents
+First we see the `wasm_bindgen(start)` attribute, this tells the function that it will be our stand-in main. To see the details of how this attribute really works [see this](https://rustwasm.github.io/wasm-bindgen/reference/attributes/on-rust-exports/start.html).  
+
+So, up until now I was talking about a component as what you would intuitively call one, a part of the DOM.
+
+If you have used React before, you will know that there is a more precise meaning to this, so let's try to get a better grasp.
+
+Components are the building blocks of Yew, they are structs that implements the trait `Component`, Yew then has the ability to render them as part of the DOM.
+
+This trait defines how the internal state of the struct is managed throughout its lifetime and how it should be rendered. 
+
+Also, it defines 2 types, `Properties`, which is the type it receives from its parent(similar to HTML attributes) and `Message` normally used for internal communication within a component. We will see more about these later.
+
+For the methods in the trait I'll not enter in detail on how each of the trait's methods works, I will only give a high-level overview of those we use, for more info [see this](https://yew.rs/docs/en/concepts/components/)
+
+* `create`: This represents when the component is first created, it receives the properties from its parent and is used as something similar to a constructor.
+* `update`: When a callback occurs this method is called with the `Message` from the callback, more on this later.
+* `change`: This is called when the parent change your properties(how rude 😟) with the new properties.
+* `view`: This is the method that will be called to render the component in the DOM.
+
+Note that `update` and `change` methods return a `ShouldRender` which is basically an alias for a `bool`, it tells **Yew** if it has to re-render the component due to the event that just occurred.
+
+Another interesting thing to note is the `html` macro in the `view` method. This allows us to write an html-like syntax with the components, similar to [JSX](https://reactjs.org/docs/introducing-jsx.html), in this case we render `<p>{"Hello, world!"}</p>` were we are showing the string `Hello, world!` inside a `<p>` component that is equivalent to the normal HTML's `<p>` tag.
+Also to use normal rust inside an `html` macro you need the `{` and `}`. To learn more about this macro refer [to the docs](https://yew.rs/docs/en/concepts/html/).
+
+Putting all this together, this `HelloWorld` component simply render `<p>Hello, world!</p>` wherever it is put, without no properties and no changes throughout its lifetime.
+
+Finally, we see the `run_app` function that creates an (App)[https://docs.rs/yew/0.17.3/yew/app/struct.App.html] which is a representation of a web-app, that is templetaized by our `HelloWorld` component, basically this `App` is a representation of the `HelloWorld` component, that as we see, after constructing(with `new`) we can call `mount_to_body` that renders the component directly in the body.
+
+So, putting it all together, this renders `<p>Hello, world!</p>` in the browser.
+
+Now let's ru-... Hold your horses, you thought you could do a `<p>Hello, world!</p>` in just 40 lines of code? Of course not.(I promise it pays off later)
+
+We need to add the `index.html` to be served as default
+
+Create the file `static/index.html` with this contents:
 
 ```html
 static/index.html
@@ -121,33 +185,54 @@ static/index.html
 </html>
 
 ```
+The only thing to notice here is the lines
 
-Let's build the changes
+```rs
+import init from "./build/wasm.js";
+init();
+```
+
+Which calls the function `init` that `wasm-pack` built for us(you can actually find the code in the `build/statics` directory, after building the code), this `init` takes charge of calling the function were we used the `wasm_bindgen(start)` attribute.
+
+Now let's build the statics files.
 
 ```bash
 wasm-pack build --target web --out-name wasm --out-dir ./static/build
 ```
 
-Now let's install `miniserve` to quickly serve the static files for now.
+Now `statics/index.html` should display `Hello, world!`, we only need to serve it now.
 
-For that, we will need to use the nightly version of rust, since it doesn't work in stable(We need that for `rocket` later on anyways)
+Now let's install `miniserve`, a server that just serves statics file in a given directory.
+
+For that, we will need to use the nightly version of rust, since it doesn't work in stable(We need to use nightly for `rocket` later on anyways).
+
+To change to nightly and install `miniserve`:
 
 ```bash
 rustup override set nightly
 cargo install miniserve --version 0.8.0
 ```
 
-Now let's serve finally, the hello world
+Now finally, let's get our hello world running.
 
 ```bash
 miniserve ./static --index index.html -p 8888
 ```
 
+Head over to http://localhost:8888/ and you should see our highly sought-after "Hello world"!
+
+### Markdown visualizer component
+#### Building a real component and rendering markdown
+
 Now let's build our first real component, a markdown visualizer.
 
-Now let's add `pulldown-cmark = "^0.7"` to our dependencies to parse and render markdown.
+Add the following `dependency`:
 
-It should look like this now
+```toml
+pulldown_cmark = "^0.7"
+```
+
+`Cargo.toml` should look like this now
 
 ```toml
 Cargo.toml
@@ -155,7 +240,7 @@ Cargo.toml
 [package]
 name = "blog"
 version = "0.1.0"
-authors = ["conectado <gabrielalejandro7@gmail.com>"]
+authors = ["<Your username>"]
 edition = "2018"
 
 [lib]
@@ -167,7 +252,9 @@ wasm-bindgen = "^0.2"
 pulldown-cmark = "^0.7"
 ```
 
-This is the component
+[pulldown-cmark](https://github.com/raphlinus/pulldown-cmark) is a markdown parser that comes with an HTML renderer.
+
+Let's use it to build our `markdown_visualizer` component. 
 
 ```rs
 src/markdown_visualizer.rs
@@ -224,8 +311,31 @@ fn view_markdown(value: &str) -> Html {
 }
 ```
 
-and let's update `src/lib.rs` to get rid of the `HelloWorld` component
+Here, we create a component `MarkdownVisualizer`, the only interesting method is the `view` which renders `# This is bold!` by calling the function `view_markdown`.
 
+Yew has 2 options to interface with Web API, `web_sys` and `stdweb`, we will use `web_sys` since it has official support from the Rust/WASM WG(for more info [see this](https://yew.rs/docs/en/getting-started/choose-web-library/).
+
+`web_sys` expose most of the browser's API, thus letting us create elements directly in the DOM, in fact `create_markdown_container` does just this, leveraging `web_sys` it creates `div` of class **markdown-body** in which we then set the HTML contents.
+
+We need to do it like this because if we simply pass the `String` representing the `HTML` rendering of our markdown to the `html` macro, it just renders the string explicitly, the browser never parses the string.
+
+If we use div's `set_inner_html` the browser interprets it as HTML, parses it and renders it.
+
+`view_markdown` does the following in this order.
+
+1. Creates a `pulldown_cmark` parser for the passed value.
+1. Create `html_output` as a buffer for the parser
+1. parses `value` and convert it to `html` by using `push_html`, loads the result into the buffer `html_output`
+1. Creates a div to hold the results by calling `create_markdown_container`
+1. Sets the HTML contents of the div to `html_output`
+1. Creates Node reference to the `div`
+1. Returns a virtual reference to the node(what Yew can render)
+
+With this this component should render our markdown.
+
+A little note before continuing, see how easily we included a Rust library(`pulldown_cmark`) in the front-end, think how powerful it's writing an application/back-end lib and being able to "freely" use it in the front-end.
+
+Finally, let's get rid of the `HelloWorld` component and mount this component to body instead.
 
 ```rs
 src/lib.rs
@@ -242,7 +352,10 @@ pub fn run_app() {
 }
 ```
 
-Let's build & serve this. Great, by now you should see the very simple markdown served.
+Let's build & serve this. Great, by now you should see the very simple markdown in the browser!.
+
+### Adding the requestloader component
+#### Using the fetch service
 
 Now, we want to serve an article instead of just hardcoding the string(although for now we will hardcode the URL)
 
@@ -549,6 +662,8 @@ Now let's run the server an check that everything is working correctly
 cargo run
 ```
 
+### Generalizing the RequestLoader component
+
 Now, let's generalize the `RequestLoader` component
 
 
@@ -718,6 +833,8 @@ pub fn run_app() {
 ```
 
 Let's compile it and test that everything is still working as usual
+
+### Adding blog preview list
 
 Now let's add a new article in `static/articles/test2.md`
 
