@@ -1,30 +1,22 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-use rocket::http::ContentType;
-use rocket::response::NamedFile;
-use rocket::{get, routes};
-use rocket_contrib::{json::Json, serve::StaticFiles};
-
-use std::fs;
-use std::path::{Path, PathBuf};
-
-use taping_memory_lib::{
-    article_list::Articles,
-    constants,
-    encoded::{AcceptEncodingHeader, EncodedContent},
+use actix_files as afs;
+use actix_http::Response;
+use actix_web::{
+    dev::HttpResponseBuilder, dev::ServiceResponse, http::StatusCode, middleware, web, App,
+    HttpRequest, HttpServer, Result,
 };
 
-#[get("/article_list")]
-fn list_articles() -> Json<Articles> {
-    let articles_path = format!("{}/{}", constants::STATIC_URL, constants::ARTICLES_PATH);
-    let mut articles: Vec<_> = fs::read_dir(&articles_path)
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error ocurred while listing statics files in directory: {}",
-                &articles_path
-            )
-        })
-        .collect();
+use std::fs;
+use std::io::{BufRead, BufReader, Seek, SeekFrom};
+use std::path::PathBuf;
+use taping_memory_lib::{article_list::Articles, constants};
 
+const PREVIEW_LINES: i8 = 9;
+
+fn list_articles(
+    dir: &afs::Directory,
+    req: &HttpRequest,
+) -> Result<ServiceResponse, std::io::Error> {
+    let mut articles: Vec<_> = fs::read_dir(&dir.path)?.collect();
     articles.sort_by(|a, b| {
         a.as_ref()
             .unwrap()
@@ -34,35 +26,58 @@ fn list_articles() -> Json<Articles> {
 
     articles.reverse();
 
-    let articles = articles
+    let articles: Vec<_> = articles
         .iter()
         .map(|res| res.as_ref().unwrap().file_name().into_string().unwrap())
         .collect();
 
-    Json(Articles { articles })
+    Ok(ServiceResponse::new(
+        req.clone(),
+        HttpResponseBuilder::new(StatusCode::OK).json(Articles { articles }),
+    ))
 }
 
-#[get("/<path..>")]
-fn get_file(path: PathBuf, encoding: AcceptEncodingHeader) -> Option<EncodedContent> {
-    let file_path = Path::new(constants::STATIC_URL).join(path);
-    match NamedFile::open(&file_path) {
-        Ok(file) => {
-            let content_type =
-                ContentType::from_extension(file.path().extension().unwrap().to_str().unwrap());
-            Some(EncodedContent::new(
-                file,
-                encoding.accept_encoding,
-                content_type.unwrap_or(ContentType::Plain),
-            ))
+async fn preview(req: HttpRequest) -> Result<Response> {
+    let base_path = PathBuf::from("static/articles/");
+    let path: PathBuf = req.match_info().query("filename").parse().unwrap();
+    let path = base_path.join(path);
+    let file = afs::NamedFile::open(path)?;
+    let res_buf = BufReader::new(&*file);
+    let mut iter = 0;
+    let mut buf = "".to_string();
+    for line in res_buf.lines() {
+        if iter <= PREVIEW_LINES {
+            buf += &line?;
+            buf += "\n";
+            iter += 1;
         }
-        _ => None,
     }
+
+    let mut res = Response::build_from(file.into_response(&req).unwrap());
+    let res = res.body(buf);
+    Ok(res)
 }
 
-fn main() {
-    rocket::ignite()
-        .mount("/", routes![list_articles])
-        .mount("/", routes![get_file])
-        .mount("/", StaticFiles::from(constants::STATIC_URL))
-        .launch();
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .wrap(middleware::Compress::default())
+            .service(
+                afs::Files::new(
+                    constants::ARTICLE_LIST_URI,
+                    format!("{}/{}", constants::STATIC_URL, constants::ARTICLES_PATH),
+                )
+                .files_listing_renderer(list_articles)
+                .show_files_listing(),
+            )
+            .route("/preview/articles/{filename:.*}", web::get().to(preview))
+            .service(afs::Files::new("/", constants::STATIC_URL).index_file("index.html"))
+    })
+    .bind(format!(
+        "127.0.0.1:{}",
+        std::env::var("PORT").unwrap_or("8080".to_string())
+    ))?
+    .run()
+    .await
 }
