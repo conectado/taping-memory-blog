@@ -60,6 +60,18 @@ async fn preview(req: HttpRequest) -> Result<Response> {
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    let ip = if cfg!(debug_assertions) {
+        "127.0.0.1"
+    } else {
+        "0.0.0.0"
+    };
+    let binding_ip = format!(
+        "{}:{}",
+        ip,
+        std::env::var("PORT").unwrap_or("8080".to_string())
+    );
+
+    println!("Will attemp to listen in http://{}/", binding_ip);
     HttpServer::new(|| {
         App::new()
             .wrap(middleware::Compress::default())
@@ -74,10 +86,7 @@ async fn main() -> std::io::Result<()> {
             .route("/preview/articles/{filename:.*}", web::get().to(preview))
             .service(afs::Files::new("/", constants::STATIC_URL).index_file("index.html"))
     })
-    .bind(format!(
-        "127.0.0.1:{}",
-        std::env::var("PORT").unwrap_or("8080".to_string())
-    ))?
+    .bind(binding_ip)?
     .run()
     .await
 }
