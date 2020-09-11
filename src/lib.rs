@@ -8,7 +8,6 @@ use yew::prelude::*;
 
 pub mod article_list;
 pub mod constants;
-pub mod encoded;
 
 mod blog_displayer;
 mod blog_preview_list;

@@ -13,27 +13,25 @@ yew = "^0.17"
 serde = "^1.0"
 serde_derive = "^1.0"
 wasm-bindgen-futures = "^0.4"
-rocket = "^0.4"
 http = "^0.2"
 anyhow = "^1.0"
 yew-router = "^0.14"
 pulldown-cmark = "^0.7"
 wee_alloc = "^0.4"
-brotli = "^3.3"
-libflate = "^1.0"
 
 [dependencies.web-sys]
 version = "*"
 features = ["NodeList"]
 
-[dependencies.rocket_contrib]
-version = "^0.4"
-features = ["serve"]
-
 [dependencies.wasm-bindgen]
 version = "^0.2"
-features = ["serde-serialize", "nightly"]
+features = ["serde-serialize"]
 
 [[bin]]
 name = "server"
 
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+actix-web = "^2.0"
+actix-rt = "^1.0"
+actix-files = "^0.2"
+actix-http = "^1.0"
