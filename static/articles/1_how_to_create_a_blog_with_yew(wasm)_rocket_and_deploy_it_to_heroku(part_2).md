@@ -53,6 +53,7 @@ crate-type = ["cdylib"]
 [dependencies]
 yew = "^0.17"
 ```
+[state-0](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-0)
 
 Now, we will install [wasm-pack](https://rustwasm.github.io), this will make the compilation and optimization of the package size extremely simple.
 
@@ -221,6 +222,8 @@ miniserve ./static --index index.html -p 8888
 
 Head over to http://localhost:8888/ and you should see our highly sought-after "Hello world"!
 
+[state-1](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-1)
+
 ### Markdown visualizer component
 #### Building a real component and rendering markdown
 
@@ -261,7 +264,6 @@ src/markdown_visualizer.rs
 ---
 use pulldown_cmark as pc;
 use yew::prelude::*;
-use yew::virtual_dom::VNode;
 use yew::web_sys;
 
 pub struct MarkdownVisualizer;
@@ -307,7 +309,7 @@ fn view_markdown(value: &str) -> Html {
     div.set_inner_html(&html_output);
 
     let node = web_sys::Node::from(div);
-    VNode::VRef(node)
+    Html::VRef(node)
 }
 ```
 
@@ -354,13 +356,15 @@ pub fn run_app() {
 
 Let's build & serve this. Great, by now you should see the very simple markdown in the browser!.
 
+[state-2](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-2)
+
 ### Adding the requestloader component
 #### Using the fetch service
 
-Now, we want to serve an article instead of just hardcoding the string(although for now we will hardcode the URL)
+Now, we want to serve an article instead of just hard-coding the string(although for now we will hard-code the URL)
 
-We will deal with Http request and responses so let's add a module to deal with that. To the dependencies in `Cargo.toml` add `http = "^0.2"`.
-Also, let's add `Anyhow` to handle errors `anyhow = "^1.0"`
+We will deal with HTTP requests and responses, so let's add a module to deal with that. To the dependencies in `Cargo.toml` add `http = "^0.2"`.
+Also, let's add `Anyhow` to handle errors `anyhow = "^1.0"`.
 
 ```
 Cargo.toml
@@ -368,7 +372,7 @@ Cargo.toml
 [package]
 name = "blog"
 version = "0.1.0"
-authors = ["conectado <gabrielalejandro7@gmail.com>"]
+authors = ["<Your username>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -384,14 +388,18 @@ http = "^0.2"
 anyhow = "^1.0"
 ```
 
-now create a new file `src/request_loader.rs`
+Now create a new file `src/request_loader.rs` to hold our component `RequestLoader`, this component will replace our `MarkdownVisualizer`.
+
+The reason for the generic name will be made clear later. `RequestLoader` for a given URL, will send a request to that URL and when the response arrives, it will display with `markdown_visualizer` the contents of the body of the response.
 
 ```
 src/request_loader.rs
 ---
+use crate::markdown_visualizer::view_markdown;
+use anyhow::Error;
+use http::{Request, Response};
 use yew::prelude::*;
 use yew::services::{fetch::FetchTask, FetchService};
-use yew::virtual_dom::VNode;
 use yew::{format::Nothing, html, Component, ComponentLink, Html, ShouldRender};
 
 pub struct RequestLoader {
@@ -399,10 +407,6 @@ pub struct RequestLoader {
     fetch_task: FetchTask,
     display_value: Option<Result<String, Error>>,
     link: ComponentLink<Self>,
-}
-
-pub trait Displayer {
-    fn display(text: &Option<String>) -> VNode;
 }
 
 #[derive(Properties, Debug, Clone, PartialEq)]
@@ -419,10 +423,10 @@ impl Component for RequestLoader {
     type Message = FetchMessage;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let _fetch_task = fetch_article_list(&props.url, &link);
+        let fetch_task = fetch_url(&props.url, &link);
         RequestLoader {
             props,
-            fetch_task: _fetch_task,
+            fetch_task,
             display_value: None,
             link,
         }
@@ -438,7 +442,7 @@ impl Component for RequestLoader {
         if self.props != props {
             self.display_value = None;
             self.props = props;
-            self.fetch_task = fetch_article_list(&self.props.url, &self.link);
+            self.fetch_task = fetch_url(&self.props.url, &self.link);
             true
         } else {
             false
@@ -460,7 +464,7 @@ impl Component for RequestLoader {
     }
 }
 
-fn fetch_article_list(url: &str, link: &ComponentLink<RequestLoader>) -> FetchTask {
+fn fetch_url(url: &str, link: &ComponentLink<RequestLoader>) -> FetchTask {
     let get_req = Request::get(url).body(Nothing).unwrap();
     let callback = link.callback(|response: Response<Result<String, Error>>| {
         FetchMessage::Loaded(response.into_body())
@@ -470,9 +474,70 @@ fn fetch_article_list(url: &str, link: &ComponentLink<RequestLoader>) -> FetchTa
 }
 ```
 
-Let's update `src/markdown_visualizer.rs` to discard the component we won't be using
+Now, our component has a state given by the fields of its struct
 
- ```
+```rs
+pub struct RequestLoader {
+    props: RequestLoaderProps,
+    fetch_task: FetchTask,
+    display_value: Option<Result<String, Error>>,
+    link: ComponentLink<Self>,
+}
+```
+
+It has `props` which we will look into later but it recieves them from its parent.
+
+`fetch_task` is a handle to the `fetch_task` related to the request that it is either trying to or has loaded.
+
+`display_value` will hold the response or lack thereof.
+
+`link` is a handle to the `ComponentLink` which is a way to send messages to the Component. In this case we will use it to tell the component when the request finished.
+
+The props for this component is:
+
+```rs
+#[derive(Properties, Debug, Clone, PartialEq)]
+pub struct RequestLoaderProps {
+    pub url: String,
+}
+```
+
+Which, is basically the URL for the request.
+
+And then we have this enum
+
+```rs
+pub enum FetchMessage {
+    Loaded(Result<String, Error>),
+}
+```
+
+Which will hold the result of loading the request.
+
+In the implementation for the component type we see how the `FetchMessage` and `RequestLoaderProps` are assigned to the type `Message` and `Props` for the trait, respectively.
+
+In the `create` method, we initialize the request using `fetch_url` and create the struct. The change method as we talked before is called when the parent change the property of its child, in this case if the parent decides "Well, actually I want to request another URL".
+
+In that case we empty the holder of the request response and re_start the fetch process, but only if the URL is actually different, otherwise we don't do anything. Of course if the URL changes, we need to re-render the component so we return `true` otherwise it doesn't need to re-render and for performance reasons we return `false`.
+
+Before seeing the `update` and `display` method, let's explore the `fetch_url` function. This uses the `yew` service `FetchService`, which is basically a way to easily call into the browser's [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch). A quick look at this function, will tell you that it creates a **GET** request using the `http`'s library `Request`. Then it creates a callback using the `ComponentLink` which simply puts the result  in the `FetchMessage` enum when it is called, and finally it calls the `FetchService` and returns the task of the on-going fetch call. Which we just need to hold so that we don't drop the reference, but any information out of this fetch we get through the callback.
+
+Let's take one more look into the creation of the callback for the fetch:
+
+```rs
+let callback = link.callback(|response: Response<Result<String, Error>>| {
+    FetchMessage::Loaded(response.into_body())
+});
+```
+This link is a `ComponentLink<RequestLoader>`, as we said before, `ComponentLink` is a way to send messages to an instance of the component. In this case, the `callback` method let us create a callback, that when called, it will then call the `update` function of the component with the return of the callback.
+
+Now we can finally see the update function, that's precisely called when the response arrives(because the callback we created with the link is called), a quick look at it tells you that when it's called it de-structure the result into `display_value` and asks for a re-render of the component.
+
+Then the `view` method isn't that much different from the `markdown_visualizer` just more handlers for the different stages of the request.
+
+Let's update `src/markdown_visualizer.rs` to discard the component we won't be using, since we are using the `request_loader` we only keep the `view_markdown` function:
+
+```
 src/markdown_visualizer.rs
 ---
 use pulldown_cmark as pc;
@@ -502,7 +567,9 @@ pub fn view_markdown(value: &str) -> Html {
 }
 ```
 
-Let's add a test article. I used [Lorem Markdownum](https://jaspervdj.be/lorem-markdownum/) to generate the random markdown.
+Let's add a test article to render with the `request_loader`. 
+
+I used [Lorem Markdownum](https://jaspervdj.be/lorem-markdownum/) to generate the random markdown.
 
 Create a file in `static/articles/test.md` with the following contents
 
@@ -587,9 +654,23 @@ pub fn run_app() {
 }
 ```
 
-Now let's create a preview list of articles
+Here, just note that we are using `mount_as_body_with_props` which allows us to pass props to the component we are passing.
 
-For that we will need a proper back-end, so let's add [Rocket](https://rocket.rs/)
+Compile and run and bask in the glory of your rendered markdown:
+
+```bash
+wasm-pack build --target web --out-name wasm --out-dir ./static/build
+miniserve ./static --index index.html -p 8888
+```
+
+[state-3](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-3)
+
+### Preparing for the preview list
+#### Adding a backend
+
+Now, for adding a list of available articles we need a back-end(Well any back-end would do, you could use a github repo for example, but it has its battery of problems, that I will not address in this article).
+
+So, let's add a back-end, we will use [Rocket](https://rocket.rs/), it's an easy to use server, which will do for our intentions.
 
 First let add to the `Cargo.toml` a new `bin` as a target for compilation.
 
@@ -598,9 +679,9 @@ First let add to the `Cargo.toml` a new `bin` as a target for compilation.
 name = "server"
 ```
 
-then let's add `rocket = "^0.4"` to the dependencies.
+Add `rocket = "^0.4"` to the dependencies.
 
-and rocket_contrib to serve statics easily
+And rocket_contrib to serve static files easily:
 
 ```rs
 [dependencies.rocket_contrib]
@@ -616,7 +697,7 @@ Cargo.toml
 [package]
 name = "blog"
 version = "0.1.0"
-authors = ["conectado <gabrielalejandro7@gmail.com>"]
+authors = ["<Your username>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -638,7 +719,6 @@ features = ["serve"]
 
 [[bin]]
 name = "server"
-
 ```
 
 And then let's add the server in `src/bin/server.rs`
@@ -662,10 +742,17 @@ Now let's run the server an check that everything is working correctly
 cargo run
 ```
 
-### Generalizing the RequestLoader component
+[state-4](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-4)
 
-Now, let's generalize the `RequestLoader` component
+#### Generalizing the RequestLoader component
 
+Next step is generalizing the `RequestLoader` so that it knows how to handle different types of requests.
+
+In this case we just want to show either an article or a list of articles. The way we prepared `request_loader` make it really easy to generalize it, we just need to make the `display` method of the `request_loader` change behaviour on whatever we want.
+
+For that we will templatize the `display_value` to hold anything instead of just String, since the HTTP request are string-based we only ask that it can be casted to this type from `String`.(We ask its lifetime to be static because `Message` needs to be static)
+
+Then we will also have a type that implements the trait `Displayer` that just describes a type that have an static method `display` that can be called to display something of type `U` the type of the `display_value`.
 
 ```
 src/request_loader.rs
@@ -678,7 +765,6 @@ use yew::{format::Nothing, html, Component, ComponentLink, Html, ShouldRender};
 
 pub struct RequestLoader<T: Displayer<U> + 'static, U: From<Text> + 'static> {
     props: RequestLoaderProps,
-    phantom: std::marker::PhantomData<T>,
     fetch_task: FetchTask,
     display_value: Option<U>,
     link: ComponentLink<Self>,
@@ -702,10 +788,9 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     type Message = FetchMessage<U>;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let fetch_task = fetch_article_list(&props.url, &link);
+        let fetch_task = fetch_url(&props.url, &link);
         RequestLoader {
             props,
-            phantom: std::marker::PhantomData,
             fetch_task,
             display_value: None,
             link,
@@ -713,8 +798,8 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        let FetchMessage::Loaded(text) = msg;
-        self.display_value = Some(text);
+        let FetchMessage::Loaded(value) = msg;
+        self.display_value = Some(value);
         true
     }
 
@@ -722,7 +807,7 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
         if self.props != props {
             self.display_value = None;
             self.props = props;
-            self.fetch_task = fetch_article_list(&self.props.url, &self.link);
+            self.fetch_task = fetch_url(&self.props.url, &self.link);
             true
         } else {
             false
@@ -738,7 +823,7 @@ impl<T: Displayer<U> + 'static, U: From<Text> + 'static> Component for RequestLo
     }
 }
 
-fn fetch_article_list<T: Displayer<U>, U: From<Text>>(
+fn fetch_url<T: Displayer<U>, U: From<Text>>(
     url: &str,
     link: &ComponentLink<RequestLoader<T, U>>,
 ) -> FetchTask {
@@ -750,7 +835,9 @@ fn fetch_article_list<T: Displayer<U>, U: From<Text>>(
 }
 ```
 
-Let's update the markdown_visualizer to work with this
+The changes are evident from what we talked before, just generalizing stuff, we just need to move away the function that is used for `view`, indeed that is what we do next.
+
+Let's create a displayer for the `markdown_visualizer`:
 
 ```rs
 src/markdown_visualizer.rs
@@ -811,7 +898,9 @@ impl Displayer<Result<String, Error>> for BlogDisplayer {
 }
 ```
 
-Let' update `src/lib.rs`
+We simply moved the logic of the `view` function into the `displayer` and created the `BlogDisplayerComponent` type that is an specialization of the `RequestLoader` component over `BlogDisplayer`.
+
+Finally, let's  update `src/lib.rs` with this component.
 
 ```rs
 src/lib.rs
@@ -834,9 +923,13 @@ pub fn run_app() {
 
 Let's compile it and test that everything is still working as usual
 
-### Adding blog preview list
+[state-5](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-5)
 
-Now let's add a new article in `static/articles/test2.md`
+#### Adding list of article preview
+
+Before getting to the component to create the preview list, we will add an end-point that returns all available articles.
+
+So that it makes sense we add a new article in `static/articles/test2.md`:
 
 ```
 static/articles/test2.md
@@ -892,7 +985,15 @@ dederat implevit serpentis vidit altis duos in quos mille verba, *exigua
 aberant*.
 ```
 
-Let's add the crates for these next section `serde = "^1.0"`, `serde_derive =  "^1.0"` add a name to the lib and add the `lib` type
+We will use [Serde](https://serde.rs/) to serialize/deserialize the  object we will use to send and recieve from the server to encode the list of articles.
+
+So, let's add it to our `Cargo.toml` in `[dependencies]` `serde = "^1.0"` and `serde_derive =  "^1.0"`(`serde` is the library and `serde_derive` has macros to really easily implement the serialize/deserialize methods for a struct).
+
+Furthermore, we now will share the code for the struct that represents a list of articles between server and client, so that any update on the struct is automatically reflected in the client and server and we never desynchronize the API with the front-end. 
+
+For sharing code between the two target(lib and bin) we need to have a crate-type of `lib` which then the compiler just do magic to compile to something usable in rust. So change the `crate-type` to `crate-type = ["cdylib", "lib"]`.(Remember you can read more [here](https://doc.rust-lang.org/reference/linkage.html))
+
+`Cargo.toml` shall now look like this.
 
 ```
 Cargo.toml
@@ -900,7 +1001,7 @@ Cargo.toml
 [package]
 name = "blog"
 version = "0.1.0"
-authors = ["conectado <gabrielalejandro7@gmail.com>"]
+authors = ["<Your username>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -925,9 +1026,12 @@ features = ["serve"]
 
 [[bin]]
 name = "server"
+
 ```
 
-Let's create an struct to hold the article list, let's create a new file `src/article_list.rs`
+Let's create an struct to hold the struct for the article list that will be shared between server and client.
+
+Let's create a new file `src/article_list.rs`
 
 ```rs
 src/article_list.rs
@@ -939,8 +1043,21 @@ pub struct Articles {
     pub articles: Vec<String>,
 }
 ```
+Only interesting thing here is the `#[derive(Deserialize, Serialize, Debug)]`, the `Deserialize` and `Serialize` macros are part of the `serde_derive` lib that automatically implements methods to serialize and deserialize the struct, to many different formats(but we will use `Json` here because it is the easiest).
 
-let's add a file to share constants `src/constants.rs`
+This struct would represent something like:
+
+```json
+{
+  "articles": [string]
+}
+```
+
+The `articles` field represent all the available articles. 
+
+Now, we will add a constants file, to hold constants shared by server and client, it will be URIs
+
+Add `src/constans.rs`:
 
 ```rs
 src/constants.rs
@@ -950,7 +1067,7 @@ pub const ARTICLES_PATH: &str = "/articles";
 pub const STATIC_URL: &str = "./static";
 ```
 
-Now let's add an endpoint in the server to list the articles
+Now let's add an endpoint in the server to list the articles:
 
 ```rs
 src/bin/server.rs
@@ -999,7 +1116,14 @@ fn main() {
 }
 ```
 
-And finally update `src/lib.rs`
+So basically, this is:
+1. Loading the contents of the article dir
+1. Sorting the by file name, to keep some consistent ordering
+1. Creating ` Json` with the struct we created before, which can be sent as a **JSON** (it's using the `Serialize`/`Deserialize` we added before in the back).
+
+And we added the endpoint in the `main` function. Note that the name for the endpoint is given by the attribute `#[get("/article_list")]`. This attribute does what is expected, tells `Rocket` this function is a `GET` endpoint with `/article_list`.
+
+And finally update `src/lib.rs` to make the `constant` and `article_list` modules public, so that the bin can use them.
 
 ```
 src/lib.rs
@@ -1029,11 +1153,31 @@ Now let's add the list component
 
 create the file `src/markdown_preview_list.rs`
 
+Now compile and run.
+```bash
+wasm-pack build --target web --out-name wasm --out-dir ./static/build --release
+cargo run
+```
+
+Now go to http://localhost:8000/article_list and see
+
+```json
+{"articles":["test2.md","test.md"]}
+```
+
+Printed in your browser.
+
+[state-6](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-6)
+
+#### Adding the article previewer
+
+Well now, finally, let's add the `BlogPreviewListDisplayerComponent`, which componsed with `RequestLoader` will achieve a preview of the posts in the list.
+
+Add `src/markdown_preview_list.rs`:
+
 ```
 src/markdown_preview_list.rs
 ---
-use yew::virtual_dom::VNode;
-
 use crate::article_list::Articles;
 use crate::markdown_visualizer::BlogDisplayerComponent;
 use crate::request_loader::Displayer;
@@ -1048,7 +1192,7 @@ pub type BlogPreviewListDisplayerComponent =
 pub struct BlogPreviewListDisplayer;
 
 impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
-    fn display(text: &Option<Json<Result<Articles, Error>>>) -> VNode {
+    fn display(text: &Option<Json<Result<Articles, Error>>>) -> Html {
         match text {
             Some(json) => match &json.0 {
                 Ok(arts) => {
@@ -1073,6 +1217,8 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
     }
 }
 ```
+
+If you look carefully, this is nothing special just re-using `BlogDisplayerComponent` with multiple urls. It gets the URLs from the `Articles` struct we defined before.
 
 Now, let's use this component in `src/lib.rs` to use it as root, let's change change the mounted component
 
@@ -1101,7 +1247,20 @@ pub fn run_app() {
 }
 ```
 
-To make our life easier let's create a root component in `src/root.rs`
+Compile and run:
+
+```bash
+wasm-pack build --target web --out-name wasm --out-dir ./static/build --release
+cargo run
+```
+
+Head to http://localhost:8000/ and you will see a list of preview of the articles.
+
+[state-7](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-7)
+
+#### Adding a root component
+
+To make our life easier let's create a root component in `src/root.rs`:
 
 ```
 src/root.rs
@@ -1140,7 +1299,9 @@ impl Component for Root {
 }
 ```
 
-Let's us this component in `src/lib.rs`
+This root simply encapsulates our `BlogPreviewListDisplayerComponent` withing a div and a body for easy usage.
+
+Let's use this component in `src/lib.rs`
 
 ```
 src/lib.rs
@@ -1165,7 +1326,7 @@ pub fn run_app() {
 }
 ```
 
-And for the new styles to work add bootstrap and fontawesome
+The root component use some styles so let's add them.
 
 ```
 static/index.html
@@ -1189,7 +1350,23 @@ static/index.html
 </html>
 ```
 
-Now let's add routing for this page
+
+Compile and run:
+
+```bash
+wasm-pack build --target web --out-name wasm --out-dir ./static/build --release
+cargo run
+```
+
+Head to http://localhost:8000/ and you will see a slightly prettier version of the last stage.
+
+[state-8](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-8)
+
+#### Adding routing
+
+Lastly, we will add routing for the page, since this is a SPA we will need routing.
+
+Routing, simply is a way to indicate the APP using the URL which component should be shown, making it work smoothly with the backward and forward buttons of the browser and making it easy redirecting to other components in the webpage. Luckily, there is already a library for Yew that does this for us.
 
 First, add `yew-router="^0.14"` to `Cargo.toml`
 
@@ -1199,7 +1376,7 @@ Cargo.toml
 [package]
 name = "blog"
 version = "0.1.0"
-authors = ["conectado <gabrielalejandro7@gmail.com>"]
+authors = ["<Your username>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -1223,13 +1400,39 @@ yew-router = "^0.14"
 version = "^0.4"
 features = ["serve"]
 
+[dependencies.web-sys]
+version = "*"
+features = ["NodeList"]
+
 [[bin]]
 name = "server"
-```
-Now, let's update the `root` component
 
 ```
+
+Let's add a `src/routes.rs` file that will hold an enum with all the available routes in the application.
+
+```rs
 src/routes.rs
+---
+use yew_router::prelude::*;
+
+#[derive(Switch, Clone)]
+pub enum AppRoute {
+    #[to = "/#articles/{post_name}"]
+    ViewPost(String),
+    #[to = "/"]
+    List,
+}
+```
+
+Notice the `to` attribute which relates an URL with a value of the enum. Moreover, it can grab part of the URL and match it with a type and put it inside a value of our enum. Meaning that when an URL follows the pattern `/#articles/{post_name}` the router will match the URL and return a `ViewPost(value)` where value is a `String`.
+
+It is quite similar(we could say equivalent) to how a router in the back-end functions, just it's routing the front-end.
+
+Now, let's add the Router component to the `Root` element, so that it displays the articles previews or the article itself depending on the current URL:
+
+```
+src/root.rs
 ---
 use crate::constants;
 use crate::markdown_preview_list::BlogPreviewListDisplayerComponent;
@@ -1268,7 +1471,7 @@ impl Component for Root {
                             </RouterAnchor<AppRoute>>
                         </div>
                         <h3 class="text-center font-weight-bold container" style="padding-top: 0.5em; padding-bottom: 0.5em; display: inline flow-root;">
-                            {"Taping Memory"}
+                            {"Blog"}
                         </h3>
                     </div>
                     <Router<AppRoute, ()>
@@ -1289,63 +1492,31 @@ impl Component for Root {
     }
 }
 ```
+Well, a slight improvement on styles were added, but more importantly we added 2 things: a `RouterAnchor`, this is just like an `a` element which instead of `href` it takes `route` which can use a Routing enum as long as its element has a `to` attribute. So as the `AppRoute::List` is the home(related to the `/` URL) the element:
 
-And let's add the routes in `src/routes.rs`
-
-
-```
-src/routes.rs
----
-use yew_router::prelude::*;
-
-#[derive(Switch, Clone)]
-pub enum AppRoute {
-    #[to = "/#articles/{post_name}"]
-    ViewPost(String),
-    #[to = "/"]
-    List,
-}
+```rs
+<RouterAnchor<AppRoute> route={AppRoute::List}>
+  <i class="fas fa-home" style="font-size: 2em; color: white;"></i>
+</RouterAnchor<AppRoute>>
 ```
 
-And finally add the module to `src/lib.rs`
+Is just like a link to the homepage(if we ever change the URL in the enum the change would be reflected here). [More on the RouterAnchor](https://docs.rs/yew-router/0.14.0/yew_router/components/struct.RouterAnchor.html).
 
-```
-src/lib.rs
----
-#![recursion_limit = "256"]
+And then the `Router` element, to understand more about how it works see [the documentation](https://docs.rs/yew-router/0.14.0/yew_router/router/struct.Router.html) and this [guide](https://yew.rs/docs/en/concepts/router/), but basically is an element with a property `render` which takes a closure(wraped by a `Router::render`) that takes an `AppRoute` that simply represent the current state of the `AppRoute` based on the `URL` and it should return the component you want to render based on this. 
 
-use root::Root;
-use wasm_bindgen::prelude::*;
-use yew::prelude::*;
+For the `AppRoute::List` it simply displays the preview list, and for anything matching `AppRoute::ViewPost(article)`(meaning an URL pattern akin to `/#articles/{article}` ) it will display the blog component with the URL corresponding to that article.
 
-pub mod article_list;
-pub mod constants;
 
-mod markdown_preview_list;
-mod markdown_visualizer;
-mod request_loader;
-mod root;
-mod routes;
-
-#[wasm_bindgen(start)]
-pub fn run_app() {
-    App::<Root>::new().mount_as_body();
-}
-```
-
-Finally, let's also update the preview
+Finally, let's also update the preview list to have links to the articles:
 
 ```rs
 src/markdown_preview_list.rs
 ---
-use yew::virtual_dom::VNode;
-
 use crate::article_list::Articles;
-use crate::blog_displayer::BlogDisplayerComponent;
+use crate::markdown_visualizer::BlogDisplayerComponent;
 use crate::request_loader::Displayer;
 use crate::request_loader::RequestLoader;
 use crate::routes::AppRoute;
-use crate::spinner::spinner;
 use anyhow::Error;
 use yew::format::Json;
 use yew::prelude::*;
@@ -1357,7 +1528,7 @@ pub type BlogPreviewListDisplayerComponent =
 pub struct BlogPreviewListDisplayer;
 
 impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
-    fn display(text: &Option<Json<Result<Articles, Error>>>) -> VNode {
+    fn display(text: &Option<Json<Result<Articles, Error>>>) -> Html {
         match text {
             Some(json) => match &json.0 {
                 Ok(arts) => {
@@ -1380,13 +1551,23 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
                 }
                 _ => html! {<p>{"Error"}</p>},
             },
-            None => spinner(),
+            None => html! {<p>{"Loading.."}</p>},
         }
     }
 }
 ```
 
-Now let's add syntax highlight in `src/markdown_visualizer.rs`
+And with this you could test your now navigable blog.
+
+[state-9](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-9)
+
+#### Adding syntax highlighting
+
+As the last thing let's add syntax highlighting for the markdown visualizer
+
+For highlighting I just found a JS library called `hljs`. So we have to deal wiith the boundary between JS and Rust.
+
+In `src/markdown_visualizer.rs` let's deal with this.
 
 ```
 src/markdown_visualizer.rs
@@ -1460,7 +1641,32 @@ impl Displayer<Result<String, Error>> for BlogDisplayer {
 }
 ```
 
-let's add the query selector feature to `Cargo.toml`
+The first thing we notice here is:
+
+```rs
+#[wasm_bindgen]
+extern "C" {
+    type hljs;
+
+    #[wasm_bindgen(static_method_of = hljs)]
+    pub fn highlightBlock(block: JsValue);
+}
+```
+
+`extern "C"` means, this is an external function, you will not find the definition here. Then the `#[wasm_bindgen]` attribute tells wasm_bindgen to do its magic and create the bindings with JS.
+
+Then, we notice:
+
+```rs
+let code_blocks = div.query_selector_all("pre code").unwrap();
+for i in 0..code_blocks.length() {
+    hljs::highlightBlock(JsValue::from(code_blocks.get(i).unwrap()));
+}
+```
+
+In the `view_markdown` code. Well, this is part of the Browser API, which we have access to thanks to `web_sys`. `query_selector_all("pre code")` give us all the child nodes of the div and allows us to highlight that node passing it to `hljs`. More on [this API](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll).
+
+To use this API we need to enable the feature `NodeList` in `web_sys`, let's do it in the `Cargo.toml`:
 
 ```rs
 Cargo.toml
@@ -1468,7 +1674,7 @@ Cargo.toml
 [package]
 name = "blog"
 version = "0.1.0"
-authors = ["conectado <gabrielalejandro7@gmail.com>"]
+authors = ["<Your username>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -1499,8 +1705,7 @@ features = ["NodeList"]
 [[bin]]
 name = "server"
 ```
-
-and let's change `static/index.html` to servee hljs
+Finally, we need to add the js lib to the HTML:
 
 ```rs
 static/index.html
@@ -1528,9 +1733,9 @@ static/index.html
 </html>
 ```
 
-And now let's change the first article for somthing with a little rust code
+And now let's change the first article for something with a little rust code so we see how it's highlighted
 
-```rs
+```
 static/articles/test.md
 ---
 
@@ -1541,5 +1746,8 @@ fn main() {
 \`\`\`
 ```
 
-And tada! we are done, next blogspot we will see how to deploy this
+Notice that you need to erase the backslashes.
 
+And tada! we are done, next blogspot we will see how to deploy this blogspot to heroku.
+
+[state-10](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-10)

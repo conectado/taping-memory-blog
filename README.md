@@ -4,7 +4,7 @@
 
 This is the source code for my blog [Taping Memory](https://taping-memory.herokuapp.com/).
 
-Save for some small glue code and CSS, it's completely written in Rust thanks to, [Rocket](https://rocket.rs/) and [Yew](https://yew.rs/)
+Save for some small glue code and CSS, it's completely written in Rust thanks to, [Actix-web](https://actix.rs/) and [Yew](https://yew.rs/)
 
 This is a **WIP** also it runs only in nightly.
 
