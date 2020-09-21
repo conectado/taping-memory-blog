@@ -24,8 +24,6 @@ fn list_articles(
             .cmp(&b.as_ref().unwrap().file_name())
     });
 
-    articles.reverse();
-
     let articles: Vec<_> = articles
         .iter()
         .map(|res| res.as_ref().unwrap().file_name().into_string().unwrap())
