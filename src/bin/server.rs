@@ -26,6 +26,7 @@ fn list_articles(
 
     let articles: Vec<_> = articles
         .iter()
+        .filter(|f| !f.as_ref().unwrap().file_type().unwrap().is_dir())
         .map(|res| res.as_ref().unwrap().file_name().into_string().unwrap())
         .collect();
 
