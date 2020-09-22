@@ -1,3 +1,5 @@
+![Ferris](articles/img/cuddlyferris.svg#portrait)
+
 # How I built this blog using only Rust (Part 1)
 ## With Yew(WASM) and Rocket and deployed it to Heroku
 

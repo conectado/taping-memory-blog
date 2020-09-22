@@ -219,6 +219,8 @@
   color: inherit;
 }
 
+<<<<<<< Updated upstream
+=======
 img[src*="#portrait"] {
   width: 10em;
   height: 10em;
@@ -226,3 +228,4 @@ img[src*="#portrait"] {
   margin-left: auto;
   margin-right: auto;
 }
+>>>>>>> Stashed changes
