@@ -25,13 +25,12 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
                         {
                             for arts.articles.iter().map(|item| {
                                 html!{
-                                    <div class="container rounded bg-element-dark" style="margin-top: 1%; display: -webkit-box; -webkit-box-orient: vertical;">
-                                        <div style="-webkit-line-clamp: 8; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">
-                                            <BlogDisplayerComponent  url={("/preview/articles/".to_string() + item)} />
-                                        </div>
-                                        <div class="text-right" style="display: block; margin: 1em; font-size: 1.1em;">
-                                            <RouterAnchor<AppRoute>  route={AppRoute::ViewPost(item.clone())}>{"See more..."}</RouterAnchor<AppRoute>>
-                                        </div>
+                                    <div class="container rounded bg-element-dark previewer" style="margin-top: 1%; display: -webkit-box; -webkit-box-orient: vertical;">
+                                        <RouterAnchor<AppRoute>  route={AppRoute::ViewPost(item.clone())} classes="previewer">
+                                            <div style="-webkit-line-clamp: 8; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">
+                                                <BlogDisplayerComponent  url={("/preview/articles/".to_string() + item)} />
+                                            </div>
+                                        </RouterAnchor<AppRoute>>
                                     </div>
                                 }
                             })

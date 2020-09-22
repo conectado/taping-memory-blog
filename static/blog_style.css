@@ -194,7 +194,7 @@
 }
 
 .bg-element-dark {
-  background-color: #1b1b2b;
+  background-color: #482e2e;
 }
 
 .bg-element-dark.sticky-top {
@@ -206,5 +206,16 @@
 }
 
 #background {
-  background-color: #14141c;
+  background-color: #824747;
 }
+
+.previewer {
+  transition: box-shadow 0.2s;
+}
+
+.previewer:hover{ 
+  box-shadow: 0.5em 0.5em 0.5em black;
+  text-decoration: inherit;
+  color: inherit;
+}
+
