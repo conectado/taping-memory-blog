@@ -73,7 +73,7 @@ And also a file `Procfile`:
 ```
 Procfile
 ---
-web: ./target/release/server
+web: ROCKET_PORT=$PORT ./target/release/server
 ```
 
 Additionally create a file `rust-toolchain`:
