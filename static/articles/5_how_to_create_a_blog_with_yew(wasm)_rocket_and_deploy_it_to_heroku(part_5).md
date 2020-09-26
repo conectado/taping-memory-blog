@@ -9,18 +9,18 @@ First create an account in [Heroku](https://id.heroku.com/login), you don't need
 
 Next, select **Create App**:
 
-![Create App](articles/img/heroku_create_app.png)
+![Create App](articles/img/heroku_create_app.png#square)
 
 Select a name, I used "taping-memory-test-blog" use whichever region.
 
 
 Now, go to the **settings** tab:
 
-![Settings](articles/img/heroku_setting_tab.png)
+![Settings](articles/img/heroku_setting_tab.png#article)
 
 And select **Add buildpack**:
 
-![Add buildpack](articles/img/heroku_add_buildpack.png)
+![Add buildpack](articles/img/heroku_add_buildpack.png#article)
 
 Add these buildpacks in this order(You can re-order them later):
 
@@ -29,7 +29,7 @@ https://github.com/conectado/heroku-buildpack-rust-wasm-pack.git
 https://github.com/heroku/heroku-buildpack-nodejs#v170
 ```
 
-![Buildpacks](articles/img/heroku_buildpacks.png)
+![Buildpacks](articles/img/heroku_buildpacks.png#article)
 
 
 Next install heroku CLI: https://devcenter.heroku.com/articles/heroku-cli

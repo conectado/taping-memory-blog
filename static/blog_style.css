@@ -223,3 +223,14 @@ img[src*="#portrait"] {
   margin-right: auto;
 }
 
+
+img[src*="#article"] {
+  width: 100%;
+  display: block;
+}
+
+
+img[src*="#square"] {
+  width: 30%;
+  display: block;
+}
