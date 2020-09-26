@@ -1,4 +1,5 @@
 .markdown-body a {
+  color: #ef804e;
   background-color: initial;
 }
 
@@ -13,11 +14,6 @@
 
 .markdown-body * {
   box-sizing: border-box;
-}
-
-.markdown-body a {
-  color: #0366d6;
-  text-decoration: none;
 }
 
 .markdown-body h1,
@@ -194,7 +190,7 @@
 }
 
 .bg-element-dark {
-  background-color: #482e2e;
+  background-color: #2a3953;
 }
 
 .bg-element-dark.sticky-top {
@@ -202,11 +198,11 @@
 }
 
 .text-element-white {
-  color: #e8e8ed;
+  color: #e6ecec;
 }
 
 #background {
-  background-color: #824747;
+  background-color: #161f28;
 }
 
 .previewer {
@@ -226,3 +222,4 @@ img[src*="#portrait"] {
   margin-left: auto;
   margin-right: auto;
 }
+

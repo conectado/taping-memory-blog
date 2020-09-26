@@ -1,5 +1,5 @@
 # How I built this blog using only Rust (part 4)
-## Hilighting the code
+## Highlighting the code
 
 #### Adding a root component
 
@@ -44,7 +44,7 @@ impl Component for Root {
 
 This root simply encapsulates our `BlogPreviewListDisplayerComponent` withing a div and a body for easy usage.
 
-Let's use this component in `src/lib.rs`
+Let's use this component in `src/lib.rs`:
 
 ```
 src/lib.rs
@@ -69,7 +69,7 @@ pub fn run_app() {
 }
 ```
 
-The root component use some styles so let's add them.
+The root component use some styles so let's add them in `static/index.html`:
 
 ```
 static/index.html
@@ -103,15 +103,15 @@ cargo run
 
 Head to http://localhost:8000/ and you will see a slightly prettier version of the last stage.
 
-[state-8](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-8)
+[Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-8)
 
 #### Adding routing
 
-Lastly, we will add routing for the page, since this is a SPA we will need routing.
+Since this is a SPA we will add routing.
 
 Routing, simply is a way to indicate the APP using the URL which component should be shown, making it work smoothly with the backward and forward buttons of the browser and making it easy redirecting to other components in the webpage. Luckily, there is already a library for Yew that does this for us.
 
-First, add `yew-router="^0.14"` to `Cargo.toml`
+Add `yew-router="^0.14"` to `Cargo.toml`:
 
 ```
 Cargo.toml
@@ -152,7 +152,7 @@ name = "server"
 
 ```
 
-Let's add a `src/routes.rs` file that will hold an enum with all the available routes in the application.
+Add a `src/routes.rs` file that will hold an enum with all the available routes in the application:
 
 ```rs
 src/routes.rs
@@ -170,7 +170,7 @@ pub enum AppRoute {
 
 Notice the `to` attribute which relates an URL with a value of the enum. Moreover, it can grab part of the URL and match it with a type and put it inside a value of our enum. Meaning that when an URL follows the pattern `/#articles/{post_name}` the router will match the URL and return a `ViewPost(value)` where value is a `String`.
 
-It is quite similar(we could say equivalent) to how a router in the back-end functions, just it's routing the front-end.
+It is quite similar(we could say equivalent) to how a router in the back-end functions, it's just routing in the front-end.
 
 Now, let's add the Router component to the `Root` element, so that it displays the articles previews or the article itself depending on the current URL:
 
@@ -235,22 +235,16 @@ impl Component for Root {
     }
 }
 ```
-Well, a slight improvement on styles were added, but more importantly we added 2 things: a `RouterAnchor`, this is just like an `a` element which instead of `href` it takes `route` which can use a Routing enum as long as its element has a `to` attribute. So as the `AppRoute::List` is the home(related to the `/` URL) the element:
+Well, a slight improvement on styles were added but more importantly we added 2 things. First a `RouterAnchor`, this is just like an `a` element which instead of `href` as property has `route` which can use a Routing enum element which we point to `AppRoute::List` representing the home(related to the `/` URL).
 
-```rs
-<RouterAnchor<AppRoute> route={AppRoute::List}>
-  <i class="fas fa-home" style="font-size: 2em; color: white;"></i>
-</RouterAnchor<AppRoute>>
-```
+Basically, it is just like a link to the homepage(if we ever change the URL in the enum the change would be reflected here). [More on the RouterAnchor](https://docs.rs/yew-router/0.14.0/yew_router/components/struct.RouterAnchor.html).
 
-Is just like a link to the homepage(if we ever change the URL in the enum the change would be reflected here). [More on the RouterAnchor](https://docs.rs/yew-router/0.14.0/yew_router/components/struct.RouterAnchor.html).
+The other thing we added is the `Router` element, to understand more about how it works see [the documentation](https://docs.rs/yew-router/0.14.0/yew_router/router/struct.Router.html) and this [guide](https://yew.rs/docs/en/concepts/router/), but basically it is an element with a property `render` which takes a closure(wrapped by a `Router::render`) that has as an argument an `AppRoute` that simply represent the current state of the `AppRoute` based on the `URL` and it should return the component you want to render based on this. 
 
-And then the `Router` element, to understand more about how it works see [the documentation](https://docs.rs/yew-router/0.14.0/yew_router/router/struct.Router.html) and this [guide](https://yew.rs/docs/en/concepts/router/), but basically is an element with a property `render` which takes a closure(wraped by a `Router::render`) that takes an `AppRoute` that simply represent the current state of the `AppRoute` based on the `URL` and it should return the component you want to render based on this. 
-
-For the `AppRoute::List` it simply displays the preview list, and for anything matching `AppRoute::ViewPost(article)`(meaning an URL pattern akin to `/#articles/{article}` ) it will display the blog component with the URL corresponding to that article.
+If the URL currently points to `AppRoute::List` it simply displays the preview list, and for anything matching `AppRoute::ViewPost(article)`(meaning an URL pattern akin to `/#articles/{article}` ) it will display the blog component with the URL corresponding to that article.
 
 
-Finally, let's also update the preview list to have links to the articles:
+Finally, we also update the preview list to have links to the articles they preview:
 
 ```rs
 src/markdown_preview_list.rs
@@ -300,15 +294,20 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
 }
 ```
 
-And with this you could test your now navigable blog.
+And with this you can test your now navigable blog:
 
-[state-9](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-9)
+```bash
+wasm-pack build --target web --out-name wasm --out-dir ./static/build --release
+cargo run
+```
+
+[Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-9)
 
 #### Adding syntax highlighting
 
 As the last thing let's add syntax highlighting for the markdown visualizer
 
-For highlighting I just found a JS library called `hljs`. So we have to deal wiith the boundary between JS and Rust.
+For highlighting I only found a JS library called `hljs`. So we have to deal wiith the boundary between JS and Rust.
 
 In `src/markdown_visualizer.rs` let's deal with this.
 
@@ -396,9 +395,9 @@ extern "C" {
 }
 ```
 
-`extern "C"` means, this is an external function, you will not find the definition here. Then the `#[wasm_bindgen]` attribute tells wasm_bindgen to do its magic and create the bindings with JS.
+`extern "C"` means, this is an external function, tells the compiler "you will not find the definition here"(among other things). Then the `#[wasm_bindgen]` attribute tells WASM bindgen to do its magic and create the bindings with JS.
 
-Then, we notice:
+Then, we analyze the new block in the `view_markdown` code:
 
 ```rs
 let code_blocks = div.query_selector_all("pre code").unwrap();
@@ -407,7 +406,7 @@ for i in 0..code_blocks.length() {
 }
 ```
 
-In the `view_markdown` code. Well, this is part of the Browser API, which we have access to thanks to `web_sys`. `query_selector_all("pre code")` give us all the child nodes of the div and allows us to highlight that node passing it to `hljs`. More on [this API](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll).
+Well, this is part of the Browser's API, which we have access to thanks to `web_sys`. `query_selector_all("pre code")` give us all the child nodes of the div and allows us to highlight that node when passing it to `hljs`. More on this API [here](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll).
 
 To use this API we need to enable the feature `NodeList` in `web_sys`, let's do it in the `Cargo.toml`:
 
@@ -448,7 +447,8 @@ features = ["NodeList"]
 [[bin]]
 name = "server"
 ```
-Finally, we need to add the js lib to the HTML:
+
+Finally, we need to add the hljs lib to the HTML:
 
 ```rs
 static/index.html
@@ -489,9 +489,18 @@ fn main() {
 \```
 ```
 
-**Notice** that you need to erase the backslashes. The artifacts of writing literal markdown in markdown.
+Notice that you need to erase the backslashes. The artifacts of writing literal markdown in markdown.
+
+
+Compile and run:
+
+```bash
+wasm-pack build --target web --out-name wasm --out-dir ./static/build --release
+cargo run
+```
 
 And tada! we are done, next blog we will see how to deploy this blog to heroku.
+
 ...
 
-[state-10](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-10)
+[Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-10)
