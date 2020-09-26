@@ -75,6 +75,8 @@ So, to follow this tutorial you will need some very basic HTML and JavaScript kn
 
 I expect you to have read the [Rust Book](https://doc.rust-lang.org/stable/book/). Although the Rust used isn't that advanced I will not be explaining any concept explained in the book.
 
+Also this tutorial is mostly oriented for people who are used to back-end development, so most of the back-end concepts won't be explained but I will try to explain most of the front-end concepts used.
+
 ### Enviroment
 
 You need to have [rustup](https://rustup.rs/) installed, I will walk through the rest of the dependencies.

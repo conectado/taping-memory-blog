@@ -37,6 +37,9 @@ impl Component for Root {
                         <h3 class="text-center font-weight-bold container" style="padding-top: 0.5em; padding-bottom: 0.5em; display: inline flow-root;">
                             {"Taping Memory"}
                         </h3>
+                        <a href="https://ko-fi.com/S6S529BSG" target="_blank">
+                            <img height="36" style="border:0px;height:36px;" src="https://cdn.ko-fi.com/cdn/kofi3.png?v=2" border="0" alt="Buy Me a Coffee at ko-fi.com" />
+                        </a>
                     </div>
                     <Router<AppRoute, ()>
                         render = Router::render(move |switch: AppRoute|

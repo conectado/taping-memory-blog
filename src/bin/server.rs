@@ -67,7 +67,7 @@ async fn main() -> std::io::Result<()> {
     let binding_ip = format!(
         "{}:{}",
         ip,
-        std::env::var("PORT").unwrap_or("8080".to_string())
+        std::env::var("PORT").unwrap_or_else(|_| "8080".to_string())
     );
 
     println!("Will attemp to listen in http://{}/", binding_ip);

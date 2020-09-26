@@ -2,9 +2,12 @@
 ## Displaying a preview list of all the articles
 
 ### Preparing for the preview list
-#### Adding a backend
 
-Now, for adding a list of available articles we need a back-end(Well any back-end would do, you could use a github repo for example, but it has its battery of problems, that I will not address in this article).
+We will add a preview list such as the one you see in the [home page of this blog](/)
+
+#### Adding a back-end
+
+Now, for adding a list of available articles we need a back-end that expose an API where you can query that.(Well any back-end would do, you could use a GitHub repo for example, but it has its battery of problems, that I will not address in this article).
 
 So, let's add a back-end, we will use [Rocket](https://rocket.rs/), it's an easy to use server, which will do for our intentions.
 
@@ -17,7 +20,7 @@ name = "server"
 
 Add `rocket = "^0.4"` to the dependencies.
 
-And rocket_contrib to serve static files easily:
+Also, we will use [rocket_contrib](https://api.rocket.rs/v0.4/rocket_contrib/) that is a crate with official sanctioned contributor functionality. We will use it to serve static files:
 
 ```rs
 [dependencies.rocket_contrib]
@@ -25,7 +28,7 @@ version = "^0.4"
 features = ["serve"]
 ```
 
-And now `Cargo.toml` should look like
+And now `Cargo.toml` should look like:
 
 ```rs
 Cargo.toml
@@ -57,7 +60,7 @@ features = ["serve"]
 name = "server"
 ```
 
-And then let's add the server in `src/bin/server.rs`
+And then let's add the server in `src/bin/server.rs`:
 
 ```rs
 src/bin/server.rs
@@ -72,23 +75,27 @@ fn main() {
 }
 ```
 
-Now let's run the server an check that everything is working correctly
+Here, `rocket::ignite()` creates a `Rocket` instance, here we mount different routes, in particular we mount `/` to serve static files, using `StaticFiles::from` which is the method provided by `rocket_contrib` to serve static file, finally we launch the application.
+
+Now let's run the server an check that everything is working correctly:
 
 ```bash
 cargo run
 ```
 
-[state-4](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-4)
+Now in http://localhost:8000 you should see the same as before but now served by your own back-end.
 
-#### Generalizing the RequestLoader component
+[Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-4)
+
+#### Generalizing the `RequestLoader` component
 
 Next step is generalizing the `RequestLoader` so that it knows how to handle different types of requests.
 
-In this case we just want to show either an article or a list of articles. The way we prepared `request_loader` make it really easy to generalize it, we just need to make the `display` method of the `request_loader` change behaviour on whatever we want.
+In this case we just want to show either an article or a list of articles. The way we prepared `request_loader` make it really easy to generalize it, we just need to make the `display` method of the `request_loader` change behaviour depending on the type of data we are requesting.
 
 For that we will templatize the `display_value` to hold anything instead of just String, since the HTTP request are string-based we only ask that it can be casted to this type from `String`.(We ask its lifetime to be static because `Message` needs to be static)
 
-Then we will also have a type that implements the trait `Displayer` that just describes a type that have an static method `display` that can be called to display something of type `U` the type of the `display_value`.
+Then we will also have a type that implements the trait `Displayer`, this trait just describes a type that have an static method `display` that can be called to display something of type `U`, now the type of the `display_value`.
 
 ```
 src/request_loader.rs
@@ -171,7 +178,7 @@ fn fetch_url<T: Displayer<U>, U: From<Text>>(
 }
 ```
 
-The changes are evident from what we talked before, just generalizing stuff, we just need to move away the function that is used for `view`, indeed that is what we do next.
+The changes are evident from what we talked before, just generalizing stuff, we just need to move the wrapping of the `view_markdown` into the `display` method of the Displayer for the `markdown_visualizer`, indeed that is what we do next.
 
 Let's create a displayer for the `markdown_visualizer`:
 
@@ -234,9 +241,9 @@ impl Displayer<Result<String, Error>> for BlogDisplayer {
 }
 ```
 
-We simply moved the logic of the `view` function into the `displayer` and created the `BlogDisplayerComponent` type that is an specialization of the `RequestLoader` component over `BlogDisplayer`.
+We simply moved the logic of the `view` function into the `displayer` and created the `BlogDisplayerComponent` type that is an alias of the `RequestLoader` component over `BlogDisplayer`.
 
-Finally, let's  update `src/lib.rs` with this component.
+Finally, let's  update `src/lib.rs` with this component:
 
 ```rs
 src/lib.rs
@@ -257,15 +264,20 @@ pub fn run_app() {
 }
 ```
 
-Let's compile it and test that everything is still working as usual
+Let's compile it and test that everything is still working as usual:
 
-[state-5](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-5)
+```bash
+wasm-pack build --target web --out-name wasm --out-dir ./static/build
+cargo run
+```
 
-#### Adding list of article preview
+[Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-5)
 
-Before getting to the component to create the preview list, we will add an end-point that returns all available articles.
+#### Adding the list of articles endpoint
 
-So that it makes sense we add a new article in `static/articles/test2.md`:
+Before getting to the component of the preview list, we will add an end-point that returns all available articles.
+
+So that having a list of articles makes sense we add a new article in `static/articles/test2.md`:
 
 ```
 static/articles/test2.md
@@ -321,9 +333,9 @@ dederat implevit serpentis vidit altis duos in quos mille verba, *exigua
 aberant*.
 ```
 
-We will use [Serde](https://serde.rs/) to serialize/deserialize the  object we will use to send and recieve from the server to encode the list of articles.
+We will use [Serde](https://serde.rs/) to serialize/de-serialize the struct that will represent the list of articles.
 
-So, let's add it to our `Cargo.toml` in `[dependencies]` `serde = "^1.0"` and `serde_derive =  "^1.0"`(`serde` is the library and `serde_derive` has macros to really easily implement the serialize/deserialize methods for a struct).
+So, let's add it to our `Cargo.toml` in `[dependencies]` `serde = "^1.0"` and `serde_derive =  "^1.0"`(`serde` is the library and `serde_derive` has macros to really easily implement the `Serialize`/`Deserialize` traits for a struct).
 
 Furthermore, we now will share the code for the struct that represents a list of articles between server and client, so that any update on the struct is automatically reflected in the client and server and we never desynchronize the API with the front-end. 
 
@@ -365,9 +377,9 @@ name = "server"
 
 ```
 
-Let's create an struct to hold the struct for the article list that will be shared between server and client.
+Let's create an struct to hold the article list that will be shared between server and client.
 
-Let's create a new file `src/article_list.rs`
+Create a new file `src/article_list.rs`:
 
 ```rs
 src/article_list.rs
@@ -379,6 +391,7 @@ pub struct Articles {
     pub articles: Vec<String>,
 }
 ```
+
 Only interesting thing here is the `#[derive(Deserialize, Serialize, Debug)]`, the `Deserialize` and `Serialize` macros are part of the `serde_derive` lib that automatically implements methods to serialize and deserialize the struct, to many different formats(but we will use `Json` here because it is the easiest).
 
 This struct would represent something like:
@@ -390,6 +403,8 @@ This struct would represent something like:
 ```
 
 The `articles` field represent all the available articles. 
+
+Though, note that the exact representation doesn't matter since it will be consistent between front and back.
 
 Now, we will add a constants file, to hold constants shared by server and client, it will be URIs
 
@@ -452,14 +467,14 @@ fn main() {
 }
 ```
 
-So basically, this is:
-1. Loading the contents of the article dir
-1. Sorting the by file name, to keep some consistent ordering
-1. Creating ` Json` with the struct we created before, which can be sent as a **JSON** (it's using the `Serialize`/`Deserialize` we added before in the back).
+We added a new endpoint in the function `list_articles` that do the following:
+1. Loads the contents of the article's directory
+1. Sorts them by file name, to keep some consistent ordering
+1. Creates a `Json` type with the struct we defined before, which can be sent as a **JSON** (it's using the `Serialize`/`Deserialize` we added before in the back).
 
-And we added the endpoint in the `main` function. Note that the name for the endpoint is given by the attribute `#[get("/article_list")]`. This attribute does what is expected, tells `Rocket` this function is a `GET` endpoint with `/article_list`.
+We also added the endpoint in the `main` function. Note that the name for the endpoint is given by the attribute `#[get("/article_list")]`. This attribute does what is expected: tells `Rocket` this function is a `GET` endpoint with name `/article_list`.
 
-And finally update `src/lib.rs` to make the `constant` and `article_list` modules public, so that the bin can use them.
+And finally, update `src/lib.rs` to make the `constant` and `article_list` modules public, so that the bin can use them.
 
 ```
 src/lib.rs
@@ -483,19 +498,16 @@ pub fn run_app() {
 }
 ```
 
-let's compile and check that the endpoint is working correctly
+let's compile and check that the endpoint is working correctly:
 
-Now let's add the list component
-
-create the file `src/markdown_preview_list.rs`
-
-Now compile and run.
 ```bash
 wasm-pack build --target web --out-name wasm --out-dir ./static/build --release
 cargo run
 ```
 
-Now go to http://localhost:8000/article_list and see
+Now go to http://localhost:8000/article_list
+
+You should see:
 
 ```json
 {"articles":["test2.md","test.md"]}
@@ -503,11 +515,11 @@ Now go to http://localhost:8000/article_list and see
 
 Printed in your browser.
 
-[state-6](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-6)
+[Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-6)
 
 #### Adding the article previewer
 
-Well now, finally, let's add the `BlogPreviewListDisplayerComponent`, which componsed with `RequestLoader` will achieve a preview of the posts in the list.
+Well now, finally, let's add the `BlogPreviewListDisplayerComponent`, which composed with `RequestLoader` will achieve a preview of the posts in the list.
 
 Add `src/markdown_preview_list.rs`:
 
@@ -554,9 +566,9 @@ impl Displayer<Json<Result<Articles, Error>>> for BlogPreviewListDisplayer {
 }
 ```
 
-If you look carefully, this is nothing special just re-using `BlogDisplayerComponent` with multiple urls. It gets the URLs from the `Articles` struct we defined before.
+If you look carefully, this is nothing special just re-using `BlogDisplayerComponent` with multiple URLs. It gets the URLs from the `Articles` struct we defined before.
 
-Now, let's use this component in `src/lib.rs` to use it as root, let's change change the mounted component
+Now, let's use this component in `src/lib.rs` to use it as root, let's change change the mounted component:
 
 ```
 src/lib.rs
@@ -583,6 +595,8 @@ pub fn run_app() {
 }
 ```
 
+Note that we added the `#![recursion_limit = "256"]` on top due to the `html` macro shenanigans.
+
 Compile and run:
 
 ```bash
@@ -590,7 +604,7 @@ wasm-pack build --target web --out-name wasm --out-dir ./static/build --release
 cargo run
 ```
 
-Head to http://localhost:8000/ and you will see a list of preview of the articles.
+Head to http://localhost:8000/ and you will see a list preview of the articles.
 
-[state-7](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-7)
+[Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-7)
 
