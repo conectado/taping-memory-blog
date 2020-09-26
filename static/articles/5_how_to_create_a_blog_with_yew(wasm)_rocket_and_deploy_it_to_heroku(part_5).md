@@ -76,6 +76,14 @@ Procfile
 web: ./target/release/server
 ```
 
+Additionally create a file `rust-toolchain`:
+
+```
+rust-toolchain
+---
+nightly
+```
+
 Now do this:
 
 ```
