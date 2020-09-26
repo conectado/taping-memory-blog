@@ -13,6 +13,7 @@ With that I mean that both the front-end and back-end are written in this langua
 
 So even if you have no interest in writing your own code for your blog, you might be interested in having a glimpse of how you too can get rid of the JavaScript curse.
 
+
 ## Introduction
 
 So first, credit where credit is due, I used [this post](https://www.steadylearner.com/blog/read/How-to-render-blog-posts-with-Rust-Yew-mounted-API) as a guiding light through building this website.
@@ -81,5 +82,8 @@ Also this tutorial is mostly oriented for people who are used to back-end develo
 
 You need to have [rustup](https://rustup.rs/) installed, I will walk through the rest of the dependencies.
 
+### Preview
+
+[Here](https://taping-memory-test-blog.herokuapp.com/) you can see how the blog will look like at the end of this tutorial.
 
 ## [Part 2](#articles/1_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_2).md)

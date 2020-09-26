@@ -94,6 +94,8 @@ git push heroku master
 
 And voila~ no you can visit your very own published blog.
 
+You can see how it should look [here](https://taping-memory-test-blog.herokuapp.com/)
+
 ### Conclusions
 
 Okay, so this are my thoughts now.
