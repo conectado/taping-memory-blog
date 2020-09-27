@@ -4,7 +4,7 @@
 **/build
 *.swp
 /node_modules
-static/
+./static/
 dist/
 pkg/
 release/
