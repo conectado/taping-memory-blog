@@ -1,0 +1,12 @@
+[package]
+name = "server"
+version = "0.1.0"
+authors = ["conectado <conectado2@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "^3.0"
+actix-rt = "^1.1"
+actix-files = "^0.3"
+actix-http = "^2.0"
+shared = { path = "../shared/" }
