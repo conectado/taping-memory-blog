@@ -19,8 +19,4 @@ jobs:
     - name: Install wasm-pack
       run: cargo install wasm-pack
     - name: Build
-      run: cargo build --release --verbose
-    - name: Build wasm
-      run: wasm-pack build --target web --out-name wasm --out-dir ./static/build
-    - name: Run tests
-      run: cargo test --verbose
+      run: npm run build
