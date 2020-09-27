@@ -1,3 +1,7 @@
 /target
+**/target
 **/*.rs.bk
+**/build
+*.swp
 /node_modules
+/stat

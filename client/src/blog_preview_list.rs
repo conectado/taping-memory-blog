@@ -1,12 +1,12 @@
 use yew::virtual_dom::VNode;
 
-use crate::article_list::Articles;
 use crate::blog_displayer::BlogDisplayerComponent;
 use crate::request_loader::Displayer;
 use crate::request_loader::RequestLoader;
 use crate::routes::AppRoute;
 use crate::spinner::spinner;
 use anyhow::Error;
+use shared::article_list::Articles;
 use yew::format::Json;
 use yew::prelude::*;
 use yew_router::components::RouterAnchor;

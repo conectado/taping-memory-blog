@@ -1,23 +1,21 @@
 [package]
-name = "WebBlog"
+name = "client"
 version = "0.1.0"
 authors = ["conectado <conectado2@protonmail.com>"]
 edition = "2018"
 
 [lib]
-name = "taping_memory_lib"
-crate-type = ["cdylib", "lib"]
+crate-type = ["cdylib"]
 
 [dependencies]
 yew = "^0.17"
-serde = "^1.0"
-serde_derive = "^1.0"
 wasm-bindgen-futures = "^0.4"
 http = "^0.2"
 anyhow = "^1.0"
 yew-router = "^0.14"
 pulldown-cmark = "^0.8"
 wee_alloc = "^0.4"
+shared = { path = "../shared" }
 
 [dependencies.web-sys]
 version = "*"
@@ -26,12 +24,3 @@ features = ["NodeList"]
 [dependencies.wasm-bindgen]
 version = "^0.2"
 features = ["serde-serialize"]
-
-[[bin]]
-name = "server"
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-actix-web = "^3.0"
-actix-rt = "^1.1"
-actix-files = "^0.3"
-actix-http = "^2.0"

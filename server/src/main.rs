@@ -5,10 +5,11 @@ use actix_web::{
     HttpRequest, HttpServer, Result,
 };
 
+use shared::article_list::Articles;
+use shared::constants;
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
-use taping_memory_lib::{article_list::Articles, constants};
 
 const PREVIEW_LINES: i8 = 9;
 
@@ -44,6 +45,7 @@ async fn preview(req: HttpRequest) -> Result<Response> {
     let res_buf = BufReader::new(&*file);
     let mut iter = 0;
     let mut buf = "".to_string();
+
     for line in res_buf.lines() {
         if iter <= PREVIEW_LINES {
             buf += &line?;

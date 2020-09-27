@@ -4,6 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "wasm-pack build --target web --out-name wasm --out-dir ./static/build && cargo build --release"
+    "start": "./target/release/server",
+    "build": "npm run build-targets && npm run copy",
+    "copy": "cp -R ./server/target . && cp -R ./client/static/ .",
+    "build-targets": "wasm-pack build client --target web --out-name wasm --out-dir ./static/build && cargo build --release --manifest-path ./server/Cargo.toml",
+    "clean": "rm -Rf static/ target/ server/target/ client/static/build/ client/target/"
   }
 }
