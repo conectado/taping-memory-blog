@@ -38,7 +38,11 @@ fn list_articles(
 }
 
 async fn preview(req: HttpRequest) -> Result<Response> {
-    let base_path = PathBuf::from("static/articles/");
+    let base_path = PathBuf::from(format!(
+        "{}/{}/",
+        constants::STATIC_URL,
+        constants::ARTICLES_PATH
+    ));
     let path: PathBuf = req.match_info().query("filename").parse().unwrap();
     let path = base_path.join(path);
     let file = afs::NamedFile::open(path)?;
