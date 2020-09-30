@@ -20,9 +20,14 @@ module.exports = (env, argv) => {
       webassemblyModuleFilename: "client.wasm"
     },
     plugins: [
-      new CopyWebpackPlugin([
-        { from: staticPath, to: distPath }
-      ]),
+      new CopyWebpackPlugin({
+        patterns: [
+          { 
+            from: staticPath, 
+            to: distPath 
+          }
+        ]
+      }),
       new WasmPackPlugin({
         crateDirectory: "client",
         extraArgs: "--no-typescript",
