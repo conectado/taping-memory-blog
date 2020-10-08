@@ -13,6 +13,10 @@ use std::path::PathBuf;
 
 const PREVIEW_LINES: i8 = 9;
 
+// TODO: Cache in-memoy articles: Redis? Embedded KV store?
+
+// TODO implement own list_articles so we can do it async and use tokio::fs instead of blocking the
+// thread. THIS HERE NOW IS A BAD IDEA!!!!!!
 fn list_articles(
     dir: &afs::Directory,
     req: &HttpRequest,

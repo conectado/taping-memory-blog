@@ -9,4 +9,6 @@ actix-web = "^3.0"
 actix-rt = "^1.1"
 actix-files = "^0.3"
 actix-http = "^2.0"
+serde = {version = "^1.0", features = ["derive"]}
 shared = { path = "../shared/" }
+tokio = {version = "^0.2", features = ["fs"]}

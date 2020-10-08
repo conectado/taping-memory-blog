@@ -6,6 +6,8 @@ pub enum AppRoute {
     AboutMe,
     #[to = "/#articles/{post_name}"]
     ViewPost(String),
+    #[to = "/#page={page_number}"]
+    Page(usize),
     #[to = "/"]
-    List,
+    HomePage,
 }

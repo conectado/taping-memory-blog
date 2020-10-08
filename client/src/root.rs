@@ -9,6 +9,8 @@ use yew_router::prelude::*;
 
 pub struct Root;
 
+// TODO: Why is root being created twice?
+
 impl Component for Root {
     type Properties = ();
     type Message = ();
@@ -18,62 +20,71 @@ impl Component for Root {
     }
 
     fn update(&mut self, _: Self::Message) -> ShouldRender {
-        true
+        false
     }
 
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
-        true
+        false
     }
 
     fn view(&self) -> Html {
         html! {
             <body>
-                <div class="text-element-white" style="overflow: auto; position: fixed; height: 100%; width: 100%;" id="background">
-                    <div class="bg-element-dark sticky-top container-fluid">
-                        <div class="row">
-                            <div class="col-3" style="display: inline">
-                                <RouterAnchor<AppRoute> route={AppRoute::List}>
-                                    <i class="fas fa-home" style="font-size: 2em; color: white;"></i>
-                                </RouterAnchor<AppRoute>>
-                            </div>
-                            <h3 class="font-weight-bold col-7" style="padding-top: 0.5em; padding-bottom: 0.5em; display: inline flow-root;">
-                                {"Taping Memory"}
-                            </h3>
-                            <div class="col-1">
-                                <a href="https://ko-fi.com/S6S529BSG" target="_blank">
-                                    <img height="36" style="border:0px;height:36px;" src="https://cdn.ko-fi.com/cdn/kofi3.png?v=2" border="0" alt="Buy Me a Coffee at ko-fi.com" />
-                                </a>
-                            </div>
-                            <div class="col-1">
-                                <RouterAnchor<AppRoute> route={AppRoute::AboutMe}>
-                                    {"About me"}
-                                </RouterAnchor<AppRoute>>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container-flow">
-                        <div class="row">
-                            <div class="col-6 offset-3">
-                                <Router<AppRoute, ()>
-                                    render = Router::render(move |switch: AppRoute|
-                                        match switch {
-                                            AppRoute::ViewPost(article) => html! {
-                                                <BlogDisplayerComponent url={format!("/{}/{}", constants::ARTICLES_PATH,  &article[..])}/>
-                                            },
-                                            AppRoute::List => html! {
-                                                <BlogPreviewListDisplayerComponent url=constants::ARTICLE_LIST_URI/>
-                                            },
-                                            AppRoute::AboutMe => html! {
-                                                <AboutMe />
-                                            }
-                                        }
-                                    )
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {header()}
+                {main_page()}
             </body>
         }
+    }
+}
+
+fn display_page(page_number: usize) -> Html {
+    html! {
+        <BlogPreviewListDisplayerComponent url=constants::ARTICLE_LIST_URI extra_args = page_number/>
+
+    }
+}
+
+fn main_page() -> Html {
+    html! {
+        <div class="container-flow" style="overflow-x: hidden; overflow-y: auto; position: relative; height: 100%; width: 100%;" id="background">
+            <div class="row">
+                <div class="col-6 offset-3">
+                    <Router<AppRoute, ()> render = Router::render(routing) />
+                </div>
+            </div>
+        </div>
+    }
+}
+
+fn routing(switch: AppRoute) -> Html {
+    match switch {
+        AppRoute::ViewPost(article) => html! {
+            <BlogDisplayerComponent url={format!("/{}/{}", constants::ARTICLES_PATH,  &article[..])}/>
+        },
+        AppRoute::Page(page_number) => display_page(page_number),
+        AppRoute::AboutMe => html! {<AboutMe />},
+        AppRoute::HomePage => display_page(1),
+    }
+}
+
+fn header() -> Html {
+    html! {
+        <h3 class="font-weight-bold header sticky-top container-fluid">
+            <div class="row">
+                    <RouterAnchor<AppRoute> route={AppRoute::HomePage} classes="offset-3 col-auto">
+                            {"Taping Memory 🩹"}
+                    </RouterAnchor<AppRoute>>
+                    <div class="col-2 offset-1">
+                        <a href="https://ko-fi.com/S6S529BSG" target="_blank">
+                            {"Buy me a coffee ☕"}
+                        </a>
+                    </div>
+                    <div class="col-1 offset-1">
+                        <RouterAnchor<AppRoute> route={AppRoute::AboutMe}>
+                            {"About me"}
+                        </RouterAnchor<AppRoute>>
+                    </div>
+            </div>
+        </h3>
     }
 }
