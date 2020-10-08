@@ -1318,7 +1318,9 @@ dependencies = [
  "actix-http",
  "actix-rt",
  "actix-web",
+ "serde",
  "shared",
+ "tokio",
 ]
 
 [[package]]
@@ -1345,7 +1347,6 @@ name = "shared"
 version = "0.1.0"
 dependencies = [
  "serde",
- "serde_derive",
 ]
 
 [[package]]

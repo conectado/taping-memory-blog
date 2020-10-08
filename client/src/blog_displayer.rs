@@ -16,7 +16,7 @@ extern "C" {
     pub fn highlightBlock(block: JsValue);
 }
 
-pub type BlogDisplayerComponent = RequestLoader<BlogDisplayer, Result<String, Error>>;
+pub type BlogDisplayerComponent = RequestLoader<BlogDisplayer, Result<String, Error>, ()>;
 
 fn create_markdown_container() -> web_sys::Element {
     let window = web_sys::window().expect("Can't find window");
@@ -46,15 +46,15 @@ fn view_markdown(value: &str) -> Html {
 
 pub struct BlogDisplayer;
 
-impl Displayer<Result<String, Error>> for BlogDisplayer {
-    fn display(text: &Option<Result<String, Error>>) -> VNode {
+impl Displayer<Result<String, Error>, ()> for BlogDisplayer {
+    fn display(text: &Option<Result<String, Error>>, _: ()) -> VNode {
         html! {
             <div style="word-break: break-word" class="bg-element-dark">
                 {
                     match &text {
                         Some(result) => match result {
                             Ok(value) => html! {
-                                <div style="padding: 1em; word-break: break-word" class="text-element-white markdown-body">
+                                <div style="word-break: break-word" class="text-element-white markdown-body">
                                     {view_markdown(value)}
                                 </div>
                             },
