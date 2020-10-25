@@ -254,16 +254,31 @@ img[src*="#article"] {
   display: block;
 }
 
+img[src*="#logo"] {
+  width: 3em;
+  height: 3em;
+  display: block;
+}
 
 img[src*="#square"] {
   width: 30%;
   display: block;
 }
 
+img[src*="#profile"] {
+  width: 9em;
+  height: 9em;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10%;
+}
+
 .pageButton {
-  border: none;
+  font-size: 1.5em;
 }
 
 .header {
   background-color: #181818;
 }
+

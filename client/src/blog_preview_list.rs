@@ -38,7 +38,9 @@ impl Displayer<Json<Result<Articles, Error>>, usize> for BlogPreviewListDisplaye
                                     if page_number > 1 {
                                         html! {
                                             <RouterAnchor<AppRoute> classes="col-1 pageButton bg-element-dark" route={AppRoute::Page(page_number - 1)}>
-                                                {"<<"}
+                                                <div class="pageButton">
+                                                    {"<<"}
+                                                </div>
                                             </RouterAnchor<AppRoute>>
                                         }
                                     } else {
@@ -49,7 +51,9 @@ impl Displayer<Json<Result<Articles, Error>>, usize> for BlogPreviewListDisplaye
                                     if end_index < arts.articles.len() {
                                         html! {
                                             <RouterAnchor<AppRoute> classes="col-1 offset-10 pageButton bg-element-dark"  route={AppRoute::Page(page_number + 1)}>
-                                                {">>"}
+                                                <div class="pageButton">
+                                                    {">>"}
+                                                </div>
                                             </RouterAnchor<AppRoute>>
                                         }
                                     } else {
