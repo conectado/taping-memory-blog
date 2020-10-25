@@ -14,6 +14,13 @@ With that I mean that both the front-end and back-end are written in this langua
 So even if you have no interest in writing your own code for your blog, you might be interested in having a glimpse of how you too can get rid of the JavaScript curse.
 
 
+### Index:
+1. [Introduction](#articles/1_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_1).md)
+1. [Displaying blog entry](#articles/2_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_2).md)
+1. [Displaying blog preview list](#articles/3_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_3).md)
+1. [Highlighting the code](#articles/4_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_4).md)
+1. [Deploying to Heroku](#articles/5_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_5).md)
+
 ## Introduction
 
 So first, credit where credit is due, I used [this post](https://www.steadylearner.com/blog/read/How-to-render-blog-posts-with-Rust-Yew-mounted-API) as a guiding light through building this website.
