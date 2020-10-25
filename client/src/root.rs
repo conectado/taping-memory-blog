@@ -70,19 +70,21 @@ fn routing(switch: AppRoute) -> Html {
 fn header() -> Html {
     html! {
         <h3 class="font-weight-bold header sticky-top container-fluid">
-            <div class="row">
-                    <RouterAnchor<AppRoute> route={AppRoute::HomePage} classes="offset-sm-3 col-auto">
-                            {"Taping Memory 🩹"}
+            <div class="row align-items-end">
+                    <RouterAnchor<AppRoute> route={AppRoute::HomePage} classes="col-3">
+                            <img src="./imgs/kitten.png#logo" />
                     </RouterAnchor<AppRoute>>
-                    <div class="col-2 offset-1">
-                        <a href="https://ko-fi.com/S6S529BSG" target="_blank">
+                    <div class="col-2 offset-6">
+                        <a href="https://ko-fi.com/S6S529BSG" target="_blank" style="position: absolute; bottom: 0;">
                             {"Buy me a coffee ☕"}
                         </a>
                     </div>
-                    <div class="col-1 offset-1">
-                        <RouterAnchor<AppRoute> route={AppRoute::AboutMe}>
-                            {"About me"}
-                        </RouterAnchor<AppRoute>>
+                    <div class="col-1">
+                        <div style="position: absolute; bottom: 0;">
+                            <RouterAnchor<AppRoute> route={AppRoute::AboutMe}>
+                                {"About me"}
+                            </RouterAnchor<AppRoute>>
+                        </div>
                     </div>
             </div>
         </h3>
