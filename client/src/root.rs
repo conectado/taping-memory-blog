@@ -71,7 +71,7 @@ fn header() -> Html {
     html! {
         <h3 class="font-weight-bold header sticky-top container-fluid">
             <div class="row">
-                    <RouterAnchor<AppRoute> route={AppRoute::HomePage} classes="offset-3 col-auto">
+                    <RouterAnchor<AppRoute> route={AppRoute::HomePage} classes="offset-sm-3 col-auto">
                             {"Taping Memory 🩹"}
                     </RouterAnchor<AppRoute>>
                     <div class="col-2 offset-1">

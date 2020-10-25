@@ -86,4 +86,4 @@ You need to have [rustup](https://rustup.rs/) installed, I will walk through the
 
 [Here](https://taping-memory-test-blog.herokuapp.com/) you can see how the blog will look like at the end of this tutorial.
 
-## [Part 2](#articles/1_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_2).md)
+## [Part 2](#articles/2_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_2).md)

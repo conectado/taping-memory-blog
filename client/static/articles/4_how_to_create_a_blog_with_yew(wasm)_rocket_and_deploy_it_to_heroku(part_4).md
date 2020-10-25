@@ -504,3 +504,5 @@ And tada! we are done, next blog we will see how to deploy this blog to heroku.
 ...
 
 [Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-10)
+
+## [Part 5](#articles/5_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_5).md)
