@@ -29,8 +29,12 @@ impl Component for AboutMe {
                 <p>{"This blog is pretty much a WIP so you'll see it changing pretty often."}</p>
                 <b>{"Contact"}</b>
                 <p>{"Don't doubt to contact me for anything you want, I don't mind. Whether you want to talk to me about your project, you have a doubt or anything else I love talking to fellow programmers(as long as you're not rude)"}</p>
+                <p>{"Also you can contact me for any possible project:"}</p>
+
+                <p>{"Name: Gabriel Steinberg"}</p>
                 <p>{"Use any of the following contacts, DMs to any of the platforms will be read(or mails)"}</p>
-                <p>{"Email: taping-memory@protonmail.com"}</p>
+                <p>{"Email about this blog: taping-memory@protonmail.com"}</p>
+                <p>{"Email about projects(paid or unpaid) or personal: gabrielalejandro7@gmail.com"}</p>
                 <p>{"Linkedin: https://www.linkedin.com/in/gabriel-alejandro-steinberg-40186a155"}</p>
                 <p>{"Twitter: https://twitter.com/MemoryTaping"}</p>
             </div>

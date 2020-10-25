@@ -608,3 +608,4 @@ Head to http://localhost:8000/ and you will see a list preview of the articles.
 
 [Here you can see how the code should be looking now](https://github.com/conectado/yew-tutorial-web-blog-states/tree/state-7)
 
+## [Part 4](#articles/4_how_to_create_a_blog_with_yew(wasm)_rocket_and_deploy_it_to_heroku(part_4).md)
