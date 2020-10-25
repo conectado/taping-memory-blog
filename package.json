@@ -19,6 +19,6 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
-    "terser-webpack-plugin": "^4.2.2"
+    "terser-webpack-plugin": "^4.2.3"
   }
 }
