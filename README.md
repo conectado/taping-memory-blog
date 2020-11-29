@@ -16,4 +16,4 @@ I'm currently working in the first article explaining how I made this blog.
 * [ ] Improve accessibility
 * [ ] Improve loading performance
 * [ ] Add a database for the articles
-* [ ] Separate into server/front-end/common crates
+* [x] Separate into server/front-end/common crates
