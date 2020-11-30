@@ -12,7 +12,7 @@ dependencies = [
  "futures-sink",
  "log",
  "pin-project 0.4.27",
- "tokio",
+ "tokio 0.2.23",
  "tokio-util",
 ]
 
@@ -138,7 +138,7 @@ dependencies = [
  "futures-channel",
  "futures-util",
  "smallvec",
- "tokio",
+ "tokio 0.2.23",
 ]
 
 [[package]]
@@ -739,7 +739,7 @@ dependencies = [
  "http",
  "indexmap",
  "slab",
- "tokio",
+ "tokio 0.2.23",
  "tokio-util",
  "tracing",
  "tracing-futures",
@@ -1352,7 +1352,7 @@ dependencies = [
  "actix-web",
  "serde",
  "shared",
- "tokio",
+ "tokio 0.3.4",
 ]
 
 [[package]]
@@ -1595,6 +1595,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dfe2523e6fa84ddf5e688151d4e5fddc51678de9752c6512a24714c23818d61"
+dependencies = [
+ "autocfg",
+ "pin-project-lite 0.2.0",
+]
+
+[[package]]
 name = "tokio-util"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1605,7 +1615,7 @@ dependencies = [
  "futures-sink",
  "log",
  "pin-project-lite 0.1.11",
- "tokio",
+ "tokio 0.2.23",
 ]
 
 [[package]]
@@ -1655,7 +1665,7 @@ dependencies = [
  "rand",
  "smallvec",
  "thiserror",
- "tokio",
+ "tokio 0.2.23",
  "url",
 ]
 
@@ -1675,7 +1685,7 @@ dependencies = [
  "resolv-conf",
  "smallvec",
  "thiserror",
- "tokio",
+ "tokio 0.2.23",
  "trust-dns-proto",
 ]
 
