@@ -1,8 +1,8 @@
 # How I built this blog using only Rust (part 5)
-## Highlighting the code
 
-### Deploying to Heroku and conclusions
+## Deploying to Heroku and conclusions
 
+### Deploying to heroku
 Here I'll very quickly and briefly tell you how I finally deployed this blog to heroku.
 
 First create an account in [Heroku](https://id.heroku.com/login), you don't need a credit card or anything like that a free account will do.
