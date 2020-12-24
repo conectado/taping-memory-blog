@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is the source code for my blog [Taping Memory](https://taping-memory.herokuapp.com/).
+This is the source code for my blog [Taping Memory](https://taping-memory.xyz/).
 
 Save for some small glue code and CSS, it's completely written in Rust thanks to, [Actix-web](https://actix.rs/) and [Yew](https://yew.rs/)
 
