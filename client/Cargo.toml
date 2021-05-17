@@ -8,7 +8,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-yew = "^0.17"
+yew = "^0.18"
 wasm-bindgen-futures = "^0.4"
 http = "^0.2"
 anyhow = "^1.0"
