@@ -67,9 +67,10 @@ async fn preview(req: HttpRequest) -> Result<Response> {
     Ok(res)
 }
 
-#[actix_rt::main]
-async fn main() -> std::io::Result<()> {
-    let ip = if cfg!(debug_assertions) {
+#[tokio::main(flavor = "multi_thread", worker_threads = 10)]
+async fn main() {
+    main_2().await.unwrap()
+    /*let ip = if cfg!(debug_assertions) {
         "127.0.0.1"
     } else {
         "0.0.0.0"
@@ -98,4 +99,38 @@ async fn main() -> std::io::Result<()> {
     .bind(binding_ip)?
     .run()
     .await
+    */
+}
+
+async fn list_files(
+    path: impl AsRef<std::path::Path>,
+) -> Result<tokio::fs::ReadDir, std::io::Error> {
+    tokio::fs::read_dir(path).await
+}
+
+use axum::{route, routing::RoutingDsl, service::ServiceExt};
+use std::net::SocketAddr;
+use tower_http::{services::ServeDir, trace::TraceLayer};
+async fn main_2() -> hyper::Result<()> {
+    tracing_subscriber::fmt::init();
+    let app = route(constants::ARTICLE_LIST_URI)
+        .route(
+            "/",
+            axum::service::get(
+                ServeDir::new(constants::STATIC_URL)
+                    .append_index_html_on_directories(true)
+                    .handle_error(|error: std::io::Error| {
+                        Ok::<_, std::convert::Infallible>((
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            format!("Unhandled internal error: {}", error),
+                        ))
+                    }),
+            ),
+        )
+        .layer(TraceLayer::new_for_http());
+    // DEBUG!
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    hyper::server::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
 }

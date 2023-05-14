@@ -74,7 +74,7 @@ fn header() -> Html {
                     <RouterAnchor<AppRoute> route={AppRoute::HomePage} classes="col-3">
                             <img src="./imgs/kitten.png#logo" />
                     </RouterAnchor<AppRoute>>
-                    <div class="col-2 offset-6">
+                    <div class="col-1 offset-6">
                         <a href="https://ko-fi.com/S6S529BSG" target="_blank" style="position: absolute; bottom: 0;">
                             {"Buy me a coffee ☕"}
                         </a>
